@@ -1,3 +1,5 @@
+Udemy Course by Scott Duffy for AZ-900
+
 Web App - run code in cloud w/o managing VM
 func app - edit code within web browser itself - small pieces of code need to run often and short execs
 logic app - allows to connect 2 apps tog, event based triggers maybe - chain stuff tog (logic diag)
