@@ -1,0 +1,1655 @@
+Web App - run code in cloud w/o managing VM
+func app - edit code within web browser itself - small pieces of code need to run often and short execs
+logic app - allows to connect 2 apps tog, event based triggers maybe - chain stuff tog (logic diag)
+
+container - pre packaged apps, easier to deploy
+Marketplace has lots of images, not just Microsoft official
+Azure AD is now Entra ID
+	
+Shared resp model
+On Prem- all me
+
+Cloud - shared
+
+VM -> physical aspects -> azure
+App Service -> above + OS Patches -> azure AND Network/firewall/auth/app settings -> shared
+SaaS -> Above all azure, Auth platform shared and rest me till user acc/data/devices
+
+
+
+Types of cloud platforms:
+
+1) Public -> services over public internet like azure/aws/gcloud etc, avail to general public w/ credit card and subscriptions (enterprise licence)
+2) Private -> pvtly owned harware and networking -> only to select users , maybe public internet or pvt network (eg govt network)
+3) Hybrid -> Mix of above 2 -> combines above 2 , eg: SQL server stretch DB, additional storage to public cloud if needed (deprecated now)
+
+compare and contrast these for exam
+
+Cloud Pricing:
+
+downside -> pricing can be diff month to month
+
+VM pricing factors (8 min):
+
+geog region
+disk type/size
+instance size
+OS
+bandwidth
+backup storage
+savings plan (spot instance etc)
+support agreement
+
+DB pricing:
+
+API
+region(s) for Write etc
+Std model/ serverless
+No. of OPS per sec
+storage
+gateway?
+backup
+
+Free services - 55+
+free tier or free or free under limit 
+
+Types:
+pay for time used
+pay for GB (storage/bandwidth - n/w traffic) inbound traffic is free, outbound free till limit
+pay for operations - write/ events / msgs for MQ / execs for logic app etc
+other also, main 3
+
+Price Calc:
+subject to change
+specific i/o bandwidth, good idea, accurate
+
+
+
+benefits of cloud:
+
+1) high avail(uptime) HA - remain oper to user during planned and unplanned outages
+				   conscious effort to avoid obv sources of downtime/failure
+planned - OS patches, app updates, hardware replacement, migrating to new hosting provider
+mitigate effects - gradual deployment strat, testing and monitoring deployment, easy rollback plan, small deployments and hence frequent deployments, 
+                   automation
+unplanned - failures, n/w disruptors, power outages, natural disasters, cyber attacks, bugs, poor design/scaling
+mitigate these - redundancy (has costs), azure built-in features like avail sets/zones/Cross reg LB/Front Door, healtchecks, 
+                 automation in ops add servers/reboot etc, strong sec practices, be geog distributed, DR plan, "fire" drills, load testing/ scaling,
+                 
+2) Scalability - abil of sys to accom incr or decr demand by adding or removing resources as needed, not requiring changes to app or sys design
+traff fluc based on time of day or year, eg: Diwali, Black Friday etc
+
+vertical -> scale up or down - make server more or less powerful, doesn't improve avail as much
+upper limit -> 96 vCPU, 384 GB Mem
+horizontal -> scale out or in - add more or reduce servers, does improve avail quite a bit, no upper limit, has LB complexities
+
+system cost impact, UP/IN -> costs double , reduce with scale down/in
+
+3) Elasticity - abil to quickly and easily scale based on changing demand
+involves automation - needed
+"autoscaling"
+monitor some metric and scale based on that, can monitor multiple (complex analysis)
+efficient and cost-effective, "waste" minimization
+self-hosted is usually over-provisioned
+
+4) Reliability - High Quality Service -> (Avail, Rel, Predic)
+abil of sys to recover from failures
+
+failure types-> Hardware failure, n/w interruptions, power fail, large-scale reg outage, (planned/unplanned points)
+
+why we need rel - trust, transparency
+
+how achieved - auto-scaling, avoid single points of failure, multi-region deployment, healthcheck/monitoring
+
+5) Predictability - abil to forecast and control perf and behav of a sys, incl abil to predict future costs
+
+why - confid that sys will continue to perf at expected level and no crazy bills
+
+how - autoscaling, LB, diff instance sizes/pricing tiers, cost management tools, API for budgeting, pricing calc
+
+6) Security - IMP - platform a massive target due to large amt of users, sec audits intl compliance certs, tools to users for appsec/datasec
+shared resp model
+
+why - fundamental, confidence in provider and user conf, 
+how - intl certs and audits, MSRC micro sec resp center, Always-on DDoS, Azure policy and blueprint(governance and basic level of sec), 
+RBAC(Role Based AC), Azure AD(Entra ID), update to date services, update management for OS etc, encryption by default for most/all services, firewalls etc
+
+7) Governance - how your org does biz, exec to IT etc, defining policies for cloud ops, 
+why - auditing and reporting, cost management, indus standards and compliance (GDPR)
+how - Azure policy and blueprint(governance and basic level of sec), managements grps (levels of access), 
+custom roles, soft delete for storage (min period for full delete), guides and cloud adop framework
+
+8) Manageability - of cloud, in cloud,  (IMP)
+of - templates, automation, sclaing, monit and alerts, self-healing(rel)
+in - web portal, API, powershell and CLIs (cloud shell)
+why - easy to work and manage resources
+how - mentioned above in of and in, azure monitor, ARM templates, terraform etc, autoscaling, 
+
+
+
+Cloud Service Types-
+
+"aaS" -> rent instead of buy, no need to own, no real commitment required, but for savings you can, pay for what you use
+
+IaaS - infra, essential IT serv, computing/storage/networking, like my own DC, cloud replacement of IRL, eg: Azure Vms / storage / Virtual Networking 
+(VMs are paid by the sec tho)
+(VN/ws - no cost but bandwidth)
+
+PaaS - platform, infra + s/w layer, middleware, dev deploy tools db servers etc, eg: azure app services, package app with config vars and azure takes care
+scaling, ci/cd, 
+managed storage, azure sql db, freed from vm or hard disk worry
+n/w - front door, LB, firewall
+
+SaaS - s/w, cloud apps, office 365, skype, dropbox, drive, app ready to be used, set it up and use it, 
+
+
+"Serverless":
+
+we don't manage the servers, only handle writing and running code, abstraction of how cloud is running my code, no need to pre-purchase/reserve stuff
+use based pricing, 
+auto-scales cpu and mem
+
+eg1: azure sql db
+pricing
+1) DTU (~ Database Transaction Unit) based - perf levels
+2) vCore - no of CPU and mem / storage
+3) Serverless - auto-scales cpu and mem based on usage, b/w 0.5 to 80 cores, charged per vCore-sec calc and storage used, can pause when idle, cuts costs
+
+eg2: Azure Funcs - first 1 mil execs per month free, after that per exec and exec time, azure auto-scales
+
+
+pros 
+good for intermittent workloads, auto-scaling, cost-eff, no server management
+
+cons
+no insights and access
+varying costs
+
+ideal for event driven or low usage workloads
+
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Core Architectural components
+
+regions
+areas of the world where azure has a set of DCs (Min 3 in a set)
+
+region pairs
+region connected to another, have highest speed conns, special treatment during spl updates
+cables under the sea, fiber-optic
+
+sovereign regions
+not connected to azure public cloud
+require approval to join
+diff compliance stds 
+govt n/ws etc
+EG: USA has 4 types - azure commercial (public), azure govt, govt secret, govt top secret
+
+
+light blue - reg
+
+EXAMPLES: 
+canada - 2 central and east (2017)
+data residency - data stored here never leaves, data privacy laws
+
+anyone in the world can use these regions
+
+data leaves brazil to the US
+one way region pairing brazil - South Central US
+
+Qatar - no pair, solo region
+cannot use GRS, uses Avail Zones for HA
+
+we have choice of where to deploy resource 
+
+
+60+ regions, not all of them are avail to everyone
+need to be resident, or sov region
+
+
+azure china - be resident 
+
+
+Availability Zones:
+
+Set of DCs or DCs that are phy separate within each region
+
+V high speed conns, 5ms, phy sep in sep buildings, sep power and cooling and conn to internet
+
+sep infra basically
+
+not every region supports AZs, eg: canada east
+
+slowly converting to AZs, but not all need them
+
+deploy to region that has AZ for HA
+
+Not every service supports AZs, 
+
+3 types of AZ services:
+
+Zonal - we choose to deploy to spec AZ, deploy duplicate to another AZ for resiliency, eg: VMs
+
+Zone redundant - auto deployed to diff AZs for you, no config needed, eg: Azure SQL DB
+
+Always avail - global, always on, "Non-regional", eg: Azure AD, Azure Front Door, the azure portal itself
+
+
+some serv give us choice for type of service needed, eg; Azure LB
+
+
+Resources and Resource Grps:
+
+HIERARCHY (High to Low)
+
+mgmt grps - main key, one or more subs, manages subs, can have sub mgmt grps, but one "super user"/centralized , azure policy on them can be put, enhancing 
+sec
+
+subs - all resources billed to one sub under which they are, billing unit within Azure - has payment method associated, 
+one user can have multiple and diff roles, diff types also - 200USD free for 30 days/pay as u go/enterprise agreement (EA) / free creds for MSDN or startups
+eg: biz units, IT, Sales, Finance etc
+eg: Geog diff biz units - EMEA, USA etc
+
+R grps - (permissions here, no sec boundary here tho) logical grouping of Rs, all under it should generally have similar lifecycle, deploy/del together 
+
+Resources - any azure service i have access to, name created by me, might need to be unique, i tell which region needed
+R can access other R in another RG unless sec wise prohibited, we need to config that
+
+
+Types of servs in Azure - The "Technical" Pillars -
+Compute
+Networking
+Storage
+DB
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+Compute and Networking
+
+Compute:
+
+Exec code in the cloud
+
+compute types (a lot)
+eg:
+
+
+VMs - closest analogue to a server, single machine divided into slices, i get to rent a single slice
+	standalone - single detached house, no personal servs shared w/ any other "neighs"
+	landlord servs - Azure - shared; common - garbage, elec, sewage etc
+	cheaper to rent apart than house
+	inside, can't tell if its a house or apart
+	IaaS	
+	AWS - EC2
+
+VM Scale sets - increase size of VM (Scaling) or no of VMs, predef grp of VMs that we can add/remove no of machines based on predef rule - demand/time/oth
+		    Elasticity
+                Same code
+		    Load Balancer used, upto 100 VMs in a single set, can increase this number upto 1000, only pay for how many used
+
+Avail Sets and Proximity Grps:
+
+Avail Sets - Mult VMs that have identical func, these are critical and kept separate from each other, "fault isolation", sep fault and update domains,
+		 sep power sources and n/w switches, updated one at a time - not tog
+
+Proximity Grp - opp of AS. mult VMs w/ identical func, close tog, same rack/server - for lil bit better perf, in a VM Scale set, less avail but more perf
+		    fastest inter server comm
+
+App servs - Web Apps - Cloud Native stuff - give code and config to azure and it'll take care
+		PaaS
+		Promise of perf but no access to Hardware
+
+A C(Container)I(Instances) - Containers - contain everything the app needs to run, fastest and easiest to deploy
+				     Types:
+			   	     ACI - single instance and quickest, 
+				     AC Apps - like a web service w/ advanced features, 
+				     AKI - own tool and commands - more complex
+
+
+A Virtual Desktop - like my virtual windows desktop, runs on azure, login w/ iOS or Android also
+
+
+Azure Functions:
+
+small pieces of code that run in cloud
+util func, v spec task, small amt of runtime, not websites, not long running progs, inexpensive, triggered by an event or time, 
+free tier - 1 Mil execs per month - serverless model, can have more complicated setups (1 million is PER SUBSCRIPTION, NOT PER FUNCTION)
+
+egs:
+code that runs at 12am everday
+check container for new files, does smth when finds new one
+runs every 6 hrs, get data from weather API
+
+
+AZURE NETWORKING SERVICES:
+
+VNets, 
+default, no 2 VMs can talk to each other, DB entry in a table that establishes path b/w VM A and VM B
+n/w exists, just not allowed until allowed explicitly
+
+VNets:
+
+Assigned IPv4 or IPv6 or both
+pvt addresses, cannot access outside of azure, or inside from azure
+single VNet is usually assigned a large set of these
+no shortage of pvt IPs
+
+Subnets:
+
+subdiv of a vnet, min 1, can create more
+assigned a set of IPs from the vnet
+sec layer b/w subnets, traffic must match predef rules to pass through
+
+
+VMs
+belong to atleast one subnet using NIC
+can have more than one NIC, hence more than one subnet
+can get public IP, can access outside of azure then - not recc
+
+Net Sec Grp:
+
+called NSG
+has an ACL, blocks/allows traffic based on rules
+
+5 elements
+source IP
+dest IP
+Source Port
+dest Port
+Protocol
+
+
+can allow traffic from subnets in same Network
+no traffic allowed until explicitly allowed
+prior in rules also
+
+
+Peering:
+
+connecting 2 subnets tog, on diff n/ws
+allows comm b/w VMs in that subnets then
+cannot have conflicting IPs
+
+
+Azure DNS:
+
+give ips a name in azure, only internally applied
+
+egs: http://dev.local
+
+can apply public domain, only works internally, 
+
+I can buy public domain in azure (App service domain), it is integrated via GoDaddy
+(AWS has its own Route53)
+
+azure VPN Gateway:
+
+Allows comp or n/w to connect to another n/w, encryption applied, certs needed, 
+
+VPNs:
+
+VPN gateway requires its own subnet
+
+WFH: P2S - point (my comp) to site (office n/w) VPN
+VPN Peering: site to site VPN, S2S, connect 2 n/ws tog
+
+
+ExpressRoute:
+
+like a vpn, but faster, pvt conn from ISP to Azure, bypasses public internet
+costs higher
+
+
+Public and Pvt Endpoints:
+
+public - to all, obv still need key to access, but can access from any network
+pvt to virtual n/w
+complete pvt - disable all access, only allow pvt connections to endpoint, create a new pvt link for them to connect, direct 1-1 routing
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+Live Demo for Compute Services
+
+
+Creating a VM:
+
+create resource -> create VM
+
+project details
+sub plan
+resource grp
+
+
+instance details
+vm name
+region
+avail op - redund req or not
+Azs, can select multiple
+sec type
+image -> OS
+vm arch - x64 ya ARM
+size - vCPU GPU etc
+
+admin account uname and pswd
+
+port rules
+licensing
+disks
+monit disbaled etc
+when created - it gives cost estimate also
+
+
+
+web apps run in app service plan (IMP)
+free F1 plan - 60 min a day tho
+deployment slots
+dev tools
+
+
+
+azure funs
+code or cont?
+hosting plan - pricing and enabled?
+consump - serverless
+premium - preemptive scaling
+appservice plan - similar to app service
+ 
+func, create, type of trigger etc
+i did http, it gave code (in azure code editor), try default url and test it out
+
+
+Kubernetes and Azure Container Instances
+
+3 servs spec for containers:
+
+
+AKS - enter grade conts, on a cluster only
+orches big fea of K
+
+Web apps for conts
+
+
+Con Instances - smallest quicket way to deploy cont
+low prior job, demonstration , not mission crit
+no orch
+no multi nodes, clus
+standalone cont ins
+
+
+confid cont also, not in exam
+
+3 default images
+helloworld
+linux
+windows
+
+
+
+if own image, Azure cont registry
+other hub also if 3rd party cont regis hub
+
+public ip works in browser
+
+
+Azure Container Apps
+
+
+create cont app env
+
+same image choices
+
+can get quickstart template also
+
+
+app url, opens simple hello page
+
+
+scale under application tab
+
+more complicated but more functional
+
+
+Deleting resources
+
+go to resource group to delete all
+---------------------------------------------------------------------
+
+Azure Storage
+IaaS
+
+
+container (blob)
+disk - for virtual Hard disks VHD
+Azure File storage
+Storage tiers
+
+
+
+azure storage
+GPv2 - general purpose
+std storage
+
+4 types of data
+container
+file
+Queue
+Table
+
+hold upto 5PB of data
+~2cents per GB per mo
+extremely cheap
+not recc for high demand workloads
+
+
+Data Lake
+
+setting up the account
+diff type of storage
+good for big data
+can hold PB and Exabytes
+
+
+Premium storage opts
+
+Blob - cont, block or page
+File
+Premium SSDs used
+Triple the OPs
+Lower latency
+More expensive, obv
+
+
+High Perf
+
+
+Prem SSD
+Prem SSD v2
+Ultra Disk - v spec type of high speed storage
+
+
+------
+Container (Blob) Storage
+
+BLOB - Binary Large OBject
+
+Any type of file, stored loosely in a cont
+public or pvt
+"unstructured" - IMP
+
+
+
+create mult conts
+each has blobs
+can be org into folders - yes and no
+not really hierarchial files
+
+
+
+THIS IS THE AWS S3 equivalent
+
+
+
+location
+mult acc in region, other regions also
+keep data close to service/person
+price varies by region
+Brazil and Japan more exp
+
+
+Redundancy
+keeps 3 copies by default
+locally or zone - our choice
+will never lose a file once saved
+
+11 9's of avail LRS
+12 for ZRS
+16 for Geo GRS and GZRS
+
+gzrs -  main reg 3 sep zones, sec all 3 in same
+
+
+Gobal red
+
+6 copies
+3 local
+3 other region of the geo
+honors data sovereignity laws
+
+
+
+Access Tiers
+
+
+Hot - def, balanced
+Cool -can be set as def, cheaper, more exp read/write
+Cold - much cheaper, more exp read/write
+Archive - cannot get immed access, cheapest, most expensive ops
+Min retention days
+0
+30
+90
+180
+avail
+99.9
+99
+99
+99
+avail in GZRS
+99.99
+99.9
+99.9
+99.9
+latency
+ms
+ms
+ms
+Hours
+supported redund
+all
+all
+all
+LRS, GRS, GZRS (No ZRS)
+
+azure lifecycle policies to move auto
+
+
+Failover
+Hard disks fail ever so often
+azure takes care
+3 copies, recreate HD behind the scenes
+
+
+--------
+create unmanaged storage account
+
+storage
+create
+res grp 
+name - globally unique
+reg, keep close to you/user/service, or data residency rules based, or price
+prim service- blob/file/tables n queues etc
+perf - std/premium
+(prem acc type if chosen prem, blob - block/page/file)
+redund - locally/geo -> sec region (6) / zone -> diff DC same reg / 
+geo-zone -> 3 diff DCs in reg and 3 in sec reg (6)
+2nd url for geo checkbox
+LRS/ GRS/ ZRS / GZRS
+
+sec transfer for REST API(HTTPS) on by def
+anonym access - public - off by def
+enable storage acc key access on def
+
+Mic Entra ID auth - off def
+
+Cross Tenant replication - allow blobs to be repli b/w mic entra tenants
+
+access tier , def is hot, can use cool/cold
+
+
+networking
+def public access
+public from selected VPN and IPs
+disable public and use pvt
+
+pvt endpoint - spec endpoint to be hit
+
+
+net routing, msft network routing or internet(public)
+
+data protect
+point-in-time restore, upto 30 days ago restore etc - for azure sql db, restore from a point in time
+
+enable soft delete , till 7 days restorable, def on, only marked as delete for 7 - for blob storage/file storage/key vault etc
+
+cont/file shares also have this feature
+
+tracking
+versioning 
+change feed - notifs for changes, by whom, what , when
+
+access control
+immutability - cannot be changed
+
+encryption
+def enc
+can choose to unen
+MMK def /CMK managed key
+go to key vault, create sec key, en happens from my key
+if CMK - what types of data to use on
+
+enable infra en, 2nd layer, Hard Disk itself runs en before storage
+
+tags
+name value pair, metadata
+
+rev and create
+
+Upload files to it
+data storage -cont - $logs cont
+static website in $web cont
+
+create a cont
+go into it, upload, 
+
+props, url for file
+paste in brow, access not permitted, if anony access not given
+need auth to access, 
+generate SAS, def settings, blob SAS url (HAS EXPIRY, max 7 days)
+~ Shared Access Signature
+use it
+now opens
+
+
+programmatic upload, 
+access keys in storage account
+
+connection string
+
+storage expl - prog access as an app download
+storage brow - access in UI
+
+------------------------
+
+AZCOPY
+
+storage acc
+1 or more cont
+
+copy files to another storage acc
+either same or other subs
+
+how to copy data in b/w blob cont
+
+1)
+goto acc
+download data
+then upload
+BAD
+b/w data charges
+time consuming
+
+
+2)
+inside of azure n/w do it
+CLI tool called azcopy
+can download to computer
+works in azure cloudshell also
+allows to copy blob files b/w accs
+prog upload also allowed
+
+using an SAS token for the file, read access or smth
+dest needed, cont SAS, get write access
+cloudshell, 
+
+azcopy -?
+azcopy copy '<src file>' '<dest cont>'
+works cross subs since SAS token
+
+COPY ALL FILES FROM ONE CONT TO ANOTHER:
+
+azcopy copy "https://<source-storage-account>.blob.core.windows.net/<source-container>?<SAS-token>" \
+"https://<destination-storage-account>.blob.core.windows.net/<destination-container>?<SAS-token>" \
+--recursive=true
+
+
+---------------------------------
+azure files and file sync
+
+azure file
+true hierar with folders
+mount this to a server, can refer using drive letter (like C drive D drive etc)
+supports SMB or NFS(Linux)
+
+
+why
+
+replace or suppl on prem file storage
+lift and shift mig to cloud
+adds redund, data rec, failover benefits
+
+
+azure file sync
+hybrid fashion b/w on prem and cloud
+cloud tiering
+distri access
+cloud backup
+
+
+----------------------
+Azure Migrate
+
+Ms toolset for assessing and moving on prem resources to azure
+IMP
+mult mig tools
+server
+db
+webapp
+virtual desktops
+
+Migrate Hub
+Projects
+discovery tool
+download into own env
+collects server/workload info and perf info
+assessment, 
+workload compatible with azure or not, 
+estim cost and score for readiness for mig
+
+workload types:
+
+VMware and hyper-v VMs
+phy servers also can be done
+db - sql server, 
+asp.net webapps
+vir desktops
+
+
+why?
+testing and research beforehand , analysis
+estimates
+batch planning
+way to track migration
+
+
+Azure Data Box:
+
+quant of data to move is imp consid for mig
+impractical to upload some data to cloud, might be too big
+
+data box disk - 8 TB
+
+data box - 100 TB
+
+data box heavy - 1 PB
+
+Azure mail this to us, fill it up, mail it back
+
+phy shipping to azure and it'll show up in our account
+
+encrypted, wiped after use
+
+---------------------------------------------------------------------
+
+Identity, Access and sec
+
+
+Mic Entra ID (Azure AD)
+
+req uid and pswd
+or sec key
+or cert
+MFA
+pswdless - fprint/face
+
+
+client server model
+client gets
+sends to server, checks in db
+
+vul
+plaintext
+outdated algos, MD5
+salt stored w/ data
+pswd policies, strong/rotation
+
+
+Active Directory - Windows
+
+extended to cloud
+Azure AD / Mcsft Entra ID
+
+diff b/w entra and AD
+
+AD - LDAP and kerberos
+
+EID - modern systems, SAML (SSO), OAuth2, OpenID
+
+
+instead of coding own backend auth, use these only for webapps
+
+
+App to Ident prov get token
+ID Prov gives trust. key to server so it can auth the token
+token used b/w client and server once we got it
+
+
+Benefits:
+
+Sec
+can use corp or let users create own creds
+use fcbk cred etc (3rd party)
+
+reduced dev time and easier support
+
+Additional feat - prem lvl plan, use AI to monitor login patterns, 
+match to existing threats, better safety
+still need access, revoke if not needed
+
+Centralized admin
+
+SSO, does tie into on-prem AD, sync
+
+Integrates w/ other Azure services
+
+
+Authen vs Author:
+
+Authen - I am who I say I am
+uid and pswd etc
+
+Author - I am allowed to use a certain resource/perform certain func or not
+Role Based etc
+Access controls
+
+Authen leads to Author
+
+Principle of Least privilege
+
+Azure AD/Entra Conditional Access:
+
+for P1 and above tiers
+not every login attempt is equally safe
+rates attr as routine/normal/sus/unexp
+if unexp, do additional steps to validate
+
+eg: 
+inside office building, A-okay
+login from other country, sus 
+someone hasn't logged in for months, then suddenly, sus..ish
+new device login, sus..ish
+make them do another MFA etc, for extra security
+
+- based on rules
+
+
+MFA/2FA:
+
+uname not a factor, since it can be public info, eg: email
+
+Factors:
+smth we know - pswd etc
+smth we have - passkey/OTP, sms/auth app, FOB (nos changed every 60s)
+smth we are  - biometrics
+
+combine these, its harder to spoof
+
+
+entra ID, global admin accs require to be MFA - can be config to use MFA for free
+
+avail methods:
+MSFT Auth app
+auth lite for outlook
+windows hello, pin
+FIDO2 sec key (FOB)
+OATH hardware token
+OATH s/w token
+SMS(OTP)
+Voice call
+
+PSWDless:
+
+conv and high sec
+
+MFA is high sec but less conv
+pswd only is conv but less secure
+
+types - 
+using gestures to sign in - finger pattern lock
+PIN
+biometrics
+Hello data kept on the device, msft does not keep it w/ them or on the cloud
+
+Auto-lock device when you are away, using bluetooth link (Win Hello)
+
+Role Based Access Control (RBAC):
+
+
+AUTHORIZATION
+msft pref sol for auth
+create roles for org or use built-in entra roles
+needs premium tier of entra for custom roles (IMP)
+entra admin - does it
+what is a role - dev/ops/it sec
+get granular w/ assignments - prin of least privil
+only get access to what you need, nothing more unless needed
+assign users to those roles
+
+try to avoid user exceptions where user gets perms in addition to those roles
+gets messy and less sec
+try to be org
+admin lvl perm not to users
+
+3 basic roles:
+
+Reader      - lmt access, read-only type role, cant change settings etc
+Contributor - Full Access, can't share perm w/ anyone else
+Owner       - Full Access, assigns perms to others
+
+
+Zero trust model:
+
+previously
+Boundary b/w corp n/w and outsie (DMZ) needs protection
+inside assumed safe, 
+
+NOT ANYMORE
+
+Can't trust any connection
+force everyone to prove identity
+
+
+3 princs:
+
+Verify explicitly - more intense verif, can't reuse tokens
+Use least privil access - RBAC etc
+assume breach - prevent data leak, redesign storage, servers talking etc
+
+
+use every method avail to validate ID and auth
+
+IP add
+geo loc
+etc
+use additional elements to validate
+
+Just-in-time access (JIT)
+only get admin access when needed, then gone
+
+Just-enough-access(JEA)
+
+sec inside network also, encryp, segmen, etc
+
+
+validate:
+ID - authen and author
+devices - compliance and health - not outdated s/w etc
+appl - approp, in app perm, monitor user act
+data - encrypt, restric access
+infra - monit, block and flag risky behav
+n/w - encrypt all comm
+
+
+Defence in Depth: VVIMP
+
+data - vir n/w endpoint
+app - API mgmt
+compute - limit remote access, win update
+n/w - NSG, subnets, deny by def
+perim - DDos, firewalls
+ID and access - entra id
+phy - door locks, key cards
+
+"bastion server" (also called a jump box)
+
+Have sec layers, more is better
+
+
+msft defender for Cloud:
+
+sec posture mgmt, eval env against sec best prac, sec score, makes recc
+threat detec and resp
+regul compl, ISO/GDPR etc
+workload protect
+
+cspm ~ cloud sec posture mgmt
+
+sub - > def plans
+free - foundational cspm 
+pay extra for defender cspm 5usd per mo
+attackers go through azure measures and checks before my apps
+monit reqs, internal logs
+for app serv more cost, cost per type of serv also
+
+reccs, useful reccs given even in free lvl
+suggs given to do, risk factor and attack paths not given unless paid tier, blurred
+if don't want to use recc - exempt, won't show up
+click fix button, enables feature recc sometimes
+assign this to people and set due date for vul fix
+
+
+Azure Firewall - net traffic fil and protection across mult subs and vpns
+
+-----------------------------------------------------------------------
+
+
+Cost mgmt in azure
+
+factors affec cost:
+
+resource type - vm compute time, storage by cap and redund, n/w by data transfer
+
+usage and billing model - pay as you go, reserved ins (1/3 yr commit), spot pricing cheatpest for intermittent workloads
+
+service tiers and config - free/basic/std/prem, more cpu more cost etc, region
+
+licensing costs - windows or sql server lic, azure hybrid benefit - save money w/ existing lics
+
+data transfer(b/w) - inbound is free, outbound cost post free tier, inter-region transfer also costs money
+
+idle or unused resources - running vm that does nothing, reserved IPs and orphaned disks
+
+additional consid - storage tiers, OPs, mktplace services costs
+
+Tools used to estimate and control costs:
+
+Azure pricing calc - try out configs
+TCO calc - on prem vs cloud
+cost mgmt + Billing - mon and opt actual costs
+
+
+Azure pricing calc :
+
+Add servs
+set configs, region etc to estimate costs per resource and total
+linux quite cheap
+enterprise ver VVVVVV Exp
+open source cheap
+paying by time for server
+savings plan or reserved inst
+
+app service - can pay by cores
+
+DB - pay by DTU, or spec cores, etc
+
+
+
+TCO calc (Total Cost of Ownership):
+
+for migrating to cloud from on-prem, compare costs of both
+define workload, DB, storage, n/w
+ques on assumptions, elec, licensing, storage costs, labor costs (IMP) etc
+savings over 5/10/15 yrs etc
+
+Azure cost mgmt + Billing:
+
+Free tool in azure portal shows past invoices and analyze spending in azure
+
+analyze spending over time
+forecast spending for curr mo
+tracking against budgets
+budgets are more like a reporting mech, warnings sent when approaching it
+schedule reports, email etc
+resource tags can help track spending
+adds metadata to resources, names, phno, email, project codes, dept code etc
+budget code for resource grp etc
+helps w/ billing and support
+
+
+Resource Tags:
+
+mult subs, divide resour b/w grps/depts/regions
+resource grps, again divide by same
+
+resource tags, metadata, key val pairs, added to resources, help in org, cost tracking and governance
+not config data, no change to behav
+can do in portal or programmatically
+tags are almost always part of resource creation process
+
+
+cost mgmt, subs, resources, filter by tag
+
+under policy tool, make tags mandatory
+can audit missing tags
+
+---------------------------------------------------------------
+
+Governance and compliance
+
+gov - within a company, are the leaders / processes that sets the rules
+board of dir
+ceo
+svp of tech
+director of development
+etc
+they set the policies
+
+can also be a formal grp like IT sec committee or arch review
+
+types of rules:
+(eg)
+
+All servers must be running s/w within msft extended support guidelines
+All servers must be backed up every 24hrs min
+Firewalls must block all inbound except 443
+only ops support can reboot a prod server
+
+
+who ensures they are followed?
+can either post the rules somewhere
+or
+get the platform to audit or enforce these rules
+
+gov goes from people to tech that enforces and audits
+
+In Azure:
+
+Azure blueprints will be retired
+replaced by:
+Template specs
+deployment stacks
+Azure Policy, ~1000 predef rules, can have our own custom also, 
+eg: tag rules
+Resource Locks - prod resources are locked down, prevents accid changes
+remove lock to change, audited, needs access request, escalation etc if unauth
+
+Msft Purview - data gov - ensuring across ent data policies followed
+RBAC - role based AC
+
+-----------
+azure policy
+
+create rules for some or all azure resources and grps
+eval compliance  of those rules
+enforce those rules
+
+egs:
+require sql server 12.0
+alowed storage account SKUs (SKU ~ Stock Keeping Units - type of that resource basically)
+tagging
+deployment locations
+allowed VM SKUs
+unallow resource types
+
+
+can create custom policy using JSON
+
+---------------------
+DEMO
+
+policy(services)
+under mgmt and gov
+given a dashboard if policy in place, % of res under compl
+
+authoring
+defs - 100s of predef policies
+policy def (+) on top, initiative(a bundle of pol) def
+assign all at once with init
+
+select pol
+assign pol, scope - sub, res grp can also be chosen under it (IMP)
+exlusions etc
+params - allowed locs for res eg
+remed
+non compl msg -  if in violation, to let them know
+rev and create
+
+
+takes around 5-15 mins to take effect
+
+validation stage will fail in violation, in details we see our msg
+
+create remed task for someone to fix non compl resources
+
+
+----------------------------------
+
+
+Resource Locks
+
+2 types
+
+read-only - see it exists, no changes to it, cannot delete
+can not delete - can change it, cannot delete
+
+
+go into res, settings , locks, add a lock, give name comments and type
+
+using RBAC, can restrict who can unlock
+
+RBAC - basically APIs that cannot be accessed
+
+------------------------
+
+msft Purview
+
+data gov tool
+one stop shop, centralized dash for all data gov issues
+
+
+
+auditing
+comm compl - SEC/ FINRA/ confid info/ adult content/ harassment
+data map and data catalogue
+ediscovery
+info protect - know your data where its stored, protect it using labels encryp
+insider risk mgmt - pot mal or inadvertent insider, IP theft, data leak, sec viol
+parting employee data theft
+risky browser usage
+repeated sec viol
+export of data eg patient data, legal client data
+
+data lifecycle mgmt
+data loss prev - browser extensions, pop-up tips, block sharing, hide from chat
+compliance manager
+ 
+
+know your data
+protect your data
+prev data loss
+govern your data
+
+--------------------------------------------------------------------
+
+
+Tools for monitoring and deploying Azure Resources
+
+
+Azure Portal
+visual way of managing, need account to get in
+can customize dashboard
+tiles
+homescreen based on freq used serv/ resources in my acc
+create a res, menu on left
+cust this screen also, appear and startup look
+themes
+cat of res, cont, db, storage, compute etc
+search also
+
+better to automate things, UI is very manual
+
+Azure cloudshell, cli, azure powershell
+
+inside azure portal
+powershell downloadable cli
+can add azure module to powershell to control my azure account using it
+Azure CLI, akin to bash cli in linux, cross platform, can dwnld
+Azure REST API interface - most diff to control Azure
+
+azure cloudshell - browser based shell env embedded in the portal
+does come w/ 2 options
+(menu in top)
+setup process - create storage acc, to persist files, lets save scripts b/w sessions
+can switch to bash also
+Get-AzVM, lists all VMs running in my sub
+Get-AzKeyVault,
+easier to read but no super prog friendly, 
+<cmd> | ConvertTo-CSV -NoTypeInformation
+az vm list for bash, ret []
+az keyvault list, w/ output as JSON List
+dir or ls
+
+create res using cloudshell:
+can go to a url w/o going through portal as well
+Get-AzStorage
+Get-AzStorageAccount
+can set output to be tabular or comma-separated
+Az module for powershell, 
+AzureRM is now deprecated, new one now
+Get-Module -Name Az -ListAvailable
+-------------------------------------------
+
+Azure arc
+
+Cross Platform Vm and cont mgmt
+on-prem mgmt also
+one interface for mgmt of servers across env
+onprem, other cloud providers (IMP), can manage inside azure
+works w/ kubernetes clusters, 
+supports dbs also
+works w/ azure policy
+
+Servers:
+win and linux
+install Azure VM Entensions for the outside ones
+can collect log data, vm insights for perf
+down and exec scripts
+refresh certs using key vault
+Kubernetes:
+Attach and manage kuber clusters anywhere
+
+can find azure arc in the portal
+add to azure for free
+---------------------------------------------------------
+
+IaC
+
+Infra as Code
+all res running in my account
+how to "backup" my infra - define my infra in a config file
+a "script" or "template", then just deploy that file
+recreate it in another reg, duplication
+Desired State Config (DSC) - once env setup, 
+if we do any changes then forget, state changed, 
+but config file knows, 
+so we can undo "drifts"
+automation to ensure configs do not drift from my orig setup
+
+options:
+ARM Templates - JSON
+Bicep - abstraction on ARM
+Terraform
+(Top 3 best, indus std)
+Chef, Puppet
+Powershell scripts
+other types of code
+
+ARM and ARM Templates (Azure Resource Manager)
+
+deploy and mgmt serv for azure
+mgmt layer to create, update delete res called "deployments"
+all actions that I take to manage my azure res goes through ARM layer
+engine behind the scenes
+every else is UI/abstraction
+
+
+portal to arm / cli to sdk to arm
+arm and authen
+then to serv
+
+arm templ - json file
+
+example:
+
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "name": "storageaccount1",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "tags": {
+                "displayName": "storageaccount1"
+            },
+            "location": "[resourceGroup().location]",
+            "kind": "StorageV2",
+            "sku": {
+               "name": "Premium_LRS",
+               "tier": "Premium"
+             }
+        }
+    ],
+    "outputs": {}
+}
+
+
+creating on portal rev and create stage, dwnld a template for automation
+JSON file
+params - vars
+from my local use powershell/cli to deploy
+if repeated deployment, write script to just change name and other params
+then deploy 
+or
+change template to create 200 in one deployment
+
+add to lib
+template lib
+create a res that gets stored in one of my res grps - template spec
+can give desc
+version num - IMP
+create - temp spec created in my res grp NOT a resource
+just go to temp and deploy
+params need to be reentered or uploaded into template if not given before
+
+template lib also in azure "Templates"
+template specs - mine avail
+
+ARM IS HOW ALL AZURE RESOURCES ARE CREATED
+
+---------------------------------------------------
+
+Monitoring Tools:
+
+Azure Advisor
+
+overview screen w/ reccs
+cost, perf, oper excel, sec, rel w/ scores
+
+analyzes our account usage to make recc for cost
+
+defender for cloud serv in sec
+
+rel - soft delete etc
+
+oper excel - best prac, might cost more but better oper, eg: latest ver, monit workspace, deprec stuff
+
+perf - vm at 80%, scale up or use autoscaling, region of vm, etc
+
+
+can take us through the steps from the recc mostly, or we can dismiss if not really a recc for us
+
+
+Azure Service Health:
+
+another dash in azure, azure serv as a whole - not ours, looks at azure plat
+emer issue
+planned main
+health advis
+sec adv
+
+can set alert for my region etc
+
+can filter res also
+event type - serv issue, planned main etc
+
+global reg also, affected everywhere
+
+can set actions also
+stored in res grp
+email/sms
+
+Azure Monitor Centralized Dashboard:
+
+all logging and analytics across my account
+
+
+appl insights enabled by def in most res
+detect anom, collects data from app
+
+data collec is not instantaneous
+
+
+Azure Monitor Reports:
+
+Logs view - can run reports on resour, like storage accs, sql server mgmt studio like editor, storage acc tables, prebuilt quer, 
+language is kusto, KQL language
+
+
+metrics tab  - eg - storage acc, avail , avg, last 7 days etc
+
+can save chart to dash
+
+
+-----------------------------------------------------------------
+
+Gaps in These Notes:
+
+
+entra ID Tiers - free and P1
+Microsoft Entra ID provides - app mgmt and auth
+An Azure Storage Account can have both a public endpoint and a private endpoint at the same time. - TRUE
+
+
+famous pricing tiers
+
+msft entra ID features other than auth
+
+HDInsight for Apache Hadoop Big Data
+
+Compatible VPM Gateway device needed for S2S VPN connection with Azure
+
+Reserved instances is preferred to Auto Shutdown cuz shutdown varies from company to company
+
+Agility - respond and drive changes in the market
+
+Policy restricts VM, how to do - remove policy is the ONLY WAY
+
+2 or more VM in diff AZ 99.99% avail
+2 or more VM in an avail set - 99.95%
+
+js files also in CDN
+
+
+region pairing - share extremely high speed conn
+
+log alert rule is not a part of Azure AD/Entra ID
+
+database service is specifically designed to be extremely fast in responding to requests for small amounts of data (called low latency)? - Cosmos DB (SaaS)
+
+incr sec - company device login only
+
+Not IaaS - Azure SQL DB
+
+Besides Azure Service Health, where else can you find out any issues that affect the Azure global network that affect you? 
+- Each Virtual Machine has a Resource Health blade
+
+what standards Microsoft is in compliance with? - see on Trust Center
+
+compute service allows you to run containerized applications without managing the underlying infrastructure - ACI
+
+stop your Azure account from incurring costs above a certain level without your knowledge - Implement the Azure spending limit in the Account Center
+
+Which style of computing is easiest when migrating an existing hosted application from your own data center into the cloud? - IaaS, lift and shift
+
+How many hours are available free when using the Azure B1S General Purpose Virtual Machines under a Azure free account in the first 12 months? - 750 Hours
+
+Which of the following benefits are provided by Azure ExpressRoute compared to a regular Site-to-Site VPN? 
+- Faster connection to Azure and Data travels over a private network, not a public one
+
+A small startup with limited IT resources and a need for flexible scalability would be best suited for which cloud model? 
+- Public only not Hybrid, small startup
+
+Which Azure App Service hosting option would you choose if you wanted isolated hardware and network, ensuring they are not used by any other Azure customers? - App serv env
+-> RA-GRS gives you a secondary endpoint for read-only access.
+
+
+data transfer between Azure regions - It's charged based on the amount of data transferred and the distance
+
+fault domain - A physical grouping of servers within an Azure data center.
+
+Management of the cloud:
+Management of the cloud speaks to managing your cloud resources. This includes setting up rules for autoscaling servers.
+Management in the cloud:
+Management in the cloud speaks to HOW you’re able to manage your cloud environment and resources. You do this through the Web Portal, command line, or APIs.
+
+connectivity option of Azure can provide connectivity from your on-premises corporate network into Azure over a private line, 
+not travelling over the public Internet - Azure ExpressRoute
+
+consumption-based pricing model? -  Public cloud
+
+block-level storage volumes managed by Azure for use with VMs? - Azure Disks
+
+Azure Cost Management help identify cost-saving opportunities - By analyzing resource utilization and identifying underutilized resources
+
+Which Azure Storage option is the lowest-cost NoSQL storage option for structured, non-relational data? - Azure Table storage
+
+Azure service is used to host Azure App Services - App serv plan
+
+NOT a condition that can be used in a Conditional Access policy - device type
+
+for VMSS - You must include an additional service such as Load Balancing or Application Gateway, not incl by default
+
+Virtual Machine move between subscription (criteria):
+Same Azure Region
+Same Tenant, i.e., account, if they differ, we might need to export and re-deploy VM
+Supported Resource Types, some NIC etc may be old and might not support, but most do
+RBAC roles may need to be reassigned in the new subscription.
+Resources with resource locks cannot be moved.
+maybe downtime 
+
+Entra ID: Cloud, does not support grp policy (domain controller does, that is for on-prem)
+not a direct replacement for AD DS
+hybrid using azure AD Connect
+Domain controller - on-prem, runs on AD DS, kerberos etc, outdated lil bit, supports grp policy

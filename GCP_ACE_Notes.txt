@@ -1,0 +1,2939 @@
+GCP NOTES
+
+exam expects to know 40+, in-depth, dec making abil, situation-based questions
+mainly compute, db, n/w, sec, management
+
+eg1: online shopping app:
+peak during hol and weekends
+less load otherwise
+sol before cloud - peak load prov, buy infra for peak load, capex
+now - autoscaling and LB
+
+eg2: startup suddenly becomes popular, again prev buy infra, but now cloud helps to be elastic
+
+on-demand resource provisioning
+
+cloud adv:
+
+trade capex for variable expense
+economies of scale
+stop guessing capacity, on-demand
+no money on running and maint DCs
+go global in mins
+
+200+ servs
+powers 8 servs w/ over 1 Billion users
+youtube, google search, gmail
+
+net carbon neutral cloud, "cleanest cloud"
+
+setting up GCP Account:
+
+free-trial $300 USD (90 DAYS ONLY), 20+ free prods
+valid card needed
+
+country and org needs
+
+won't charge at end of free trial, asks to upgrade to paid account
+
+
+Regions and Zones:
+
+region - geog reg, country usually
+zones ~ DC 
+MIN 3 per region
+has one or more discrete clusters
+connected to each other w/ low latency links
+(a/b/c)
+
+google has 20+ regs around the world
+
+HA
+Low Latency
+Global footprint
+adhere to gov regs
+
+-----------------------------------
+Compute Engine
+
+create and manage LC of VM
+LB and autoscaling
+attach storage and n/w storage
+manage n/w conn and config
+
+demo:
+
+cloud.google.com
+console top right
+
+top: dash, act, reccs
+
+compute engine
+create/import/take quickstart
+create, name - perm, labels(opt), reg and zone is perm, h/w- machine config - gen pur/compute opt/mem opt/GPU, series, mach type, boot disk(OS) - image, 
+debian def, firewall config - allow http/htps, access scopes for OS, confid vm, cont, cost estim at the right, create
+
+create vm from temp/ machine image/ marketplace
+
+equi REST or CLI at last
+
+mach families
+gen pur - e2,n2,n2d,n1, best price-perf ratio
+in this also mach types, std-2, 4,8, 16, 32 - no of vCPUs, mem disk and n/w capa incs w/ vCPUs
+mem is *4, 
+me opt  - m2,m1, ultra high mem workloads
+com opt - c2, gaming
+GPU     - also there
+
+image - public image - main by google or Open source or 3rd party, custom - created by me
+
+under vm inst, i can see status, int IP and ext IP assigned, connect from there, stop, sus, reset, del etc
+ssh opens as pop-up
+run commands
+whoami
+username printed
+pwd - /home/uname/
+ls is usually empty
+
+info panel to see info of resources, select them first
+
+
+commands - 
+Installing http webserver on the server and hosting static website with hello msg
+
+sudo su
+apt update 
+apt install apache2
+ls /var/www/html
+echo "Hello World!"
+echo "Hello World!" > /var/www/html/index.html
+echo $(hostname)
+echo $(hostname -i)
+echo "Hello World from $(hostname)"
+echo "Hello World from $(hostname) $(hostname -i)"
+echo "Hello world from $(hostname) $(hostname -i)" > /var/www/html/index.html
+sudo service apache2 start
+
+internal vs ext IP addresses - 
+
+ext - public accessible, browser shows
+
+int - int to corp n/w, vm in gcp n/w
+
+cannot have 2 res w/ same ext ip(obv)
+2 diff corp n/ws can have same int ips
+
+all vms have by def atleast 1 int ip,m ext we can choose if needed
+stopping vm, ext ip is lost, ext Ip shown is None
+int ip still assigned
+sometimes same ext IP, but purely coincidence, NOT functionality
+
+services installed still there on restart
+service apache2 start
+
+
+search ip addresses, select ext ip, then select ips
+
+assign a static ip add for constant ext ip address
+
+type - ephemeral unless static
++ reserve static address
+name, desc, n/w ser tier - prem or std, ip ver, reg or global, attached to, (NEED TO BE SAME REG AS VM)
+
+global IPs:
+LB, cloud CDN, other global servs
+
+can change static ip also, if vm not listed, needs to be same reg
+static assigned, ephemeral is auto removed
+
+
+can be switched to another vm in same project
+remains attached on stopping inst also
+billed for static IP always
+bill for not using is higher
+del ins, del static ip also if not to be used
+release static ip - best practice
+
+
+script:
+
+#!/bin/bash
+apt update 
+apt -y install apache2 (bypass the y/n question to say yes beforehand)
+echo "Hello world from $(hostname) $(hostname -I)" > /var/www/html/index.html
+
+
+1) startup script for vm - bootstrapping - install all OS patches on startup, 
+under mgmt, automation, startup script text box
+2) instance template - def properties, used to create vm inst and managed inst grps, CANNOT BE UPDATED, create new one for diff, image family can be spec
+latest no-dep ver of that fam is used (opt)
+go to inst temp
+create new
+name,
+props
+etc
+FREE OF COST, only instances created are paid for
+def name is inst-temp-name-<number of inst created>
+(script is in custom metadata of existing inst)
+3) custom image - installing OS patches at launch incr bootup time, can created custom image w/ patches and OS pre-installed, create custom image from inst,
+create form persis disk (when we attach HD to a VM) or snapshot(copy of per disk), another image or cloud storage
+can be shared across projects
+can deprecate old images, mark it as depre, recc a new image
+hardening an image  - all corp sec stds incorp in image
+prefer custom image to startup scripts
+
+expand storage - disks, snapshots, images, same name as vm, def size 10 GB, 3 dots - create image, can be stored mult-reg or regional, need to stop inst
+and only then create (IMP)
+public images also listed, image import and export hist also
+now use it to create vm inst, from here or vm creat
+
+can create inst templ from it also
+(COPY button at the top)
+
+boot disk, use cust image, not debian
+startup script no longer needs install, just custom commands, just startup apache, no install needed, part of image
+
+
+debug problems, make sure using ext ip, ssh into it - apache webserver is properly installed or not, cat html file, service is started or not(sudo first),
+firewalls - alow http traffic, edit vm and change and save
+
+can pin serv in sidebar menu
+
+dashboard - proj info, api uses, cloud plat status, billing, monit, resour, trace, error, news
+act - all API act, filter also, act or resour
+reccs - anal cloud usage, recc shown here
+
+create projects and resour under those proj, top panel shows it
+free trial status - gift symbol
+cli symbol
+help sym, notifs also
+3 dots - settings and util
+proj settings 
+account w/ pfp top right
+
+
+VM DISCOUNTS:
+
+sustained use disc - running vm for signi port of billing month
+n1/n2 more than 25% of time, 20-50% disc for every incr min
+disc incr w/ usage
+no action req, it happens auto
+appli for instances created by google kub inst and GCE
+NOT on certain machine types
+DOES NOT apply to app eng flex and dataflow
+
+commited use disc - for pred res need workloads, 1/3 yr commits, upto 70% disc, appl to kub and GCE and not on app eng flex and dataflow
+
+how to ask - commit use disc under VM sidebar purchase commit, h/w or s/w commit, vm is h/w, licence is s/w, auto app on inst of that type
+
+preemptible VMs - short-lived cheaper vms (SPOT INSTANCES), 80%, can be stopped by GCP in 24hrs, max time use is 24hrs, 30 sec warning
+use only if appl are fault tolerant, vv cost sensitive, workload is NOT IMMEDIATE, batch prog - use it for like once every 15 days
+NOT ALW AVAIL, NO SLA, CANNOT BE MIGRATED TO REG VM, NO AUTO RESTART, FREE TIER CREDITS NOT APPL
+vm inst, vm inst, create, mgmt - avail pol, preemptibility off by def, turn it on
+
+
+spot vms - latest ver of preemp vms, avail model - std or spot, spot vms do NOT have a max runtime, preemp have 24hrs
+oth fea are same a trad preemp vms
+pricing - 60-91% disc
+
+
+Billing for GCE:
+
+billed by the sec after a minimum of 1 min
+NOT billed for stopped inst, but storage or static ips stc are billed
+alw create budget alerts
+billing - bud and alerts, create bud on top, then alert, name, proj, serv, bud type eg amt - targ amt, aler thresh rules, def 50% 90% 100%, config notifs
+billing export, bigquery or file export, 
+oth - vm types and image and disc avail, 
+
+
+HIGH AVAIL and LIVE MIGRATION:
+
+gcp needs to perf s/w or h/w upgrade, fea called live mig, running inst auto mig to another host in same zone
+does not change any attr or prop of vm, even w/ local ssd vms, NOT FOR PREEMP or GPU INST
+config under -> avail policy, 2 things - on-host main(perio infra) - def is migrate, 2nd - terminate OR auto restart if term due to non-user init reasons
+
+create inst, mgmt, avail pol, on host main def is migrate and auto restart (def on recc)
+
+custom machine types:
+
+when predef vm opts not approp to workload, vcpu, gpu, mem, choose, applic only to cert machine types, OS list, billed per vCPU and mem
+given hourly prices
+mach type - custom, sliders -  in mult of 2
+eg
+vcpu 2-32
+mem 3-48
+
+
+GPUs in GCE:
+
+math int and graphic int workloads - AI/ML
+high perf, higher cost, IMAGES w/ GPU libs installed, that I have to see, 
+GPU Restructions - not for all mach types - not for shared core or mem opt
+cannot do live mig
+rec avail - auto restart on
+
+under mach config, mac fam or gen purp and add GPU to them(NOT TO ALL THO)
+
+REVIEW vms:
+assoc to project, mult projs, mult res under them
+mach type avail can vary b/w regions
+can only change mach type of a stopped inst
+can be filtered using various props, based on name, zone, label, mch type, n/w, status, int ips etc
+inst are zonal only run in spec zone
+images are global, for other projects also 
+inst temp also global, oth projects also
+INST TEMP ARE NOW REGIONAL - VVVVVVIMP
+auto basic monit is auto enabled
+details/monit/screenshot
+cloud monit agent needed for cert metrics like mem util and disk util
+
+
+BEST PRAC for compute engines:
+
+zone and reg based on - users, cost, regs, h/w needs
+distri inst in mult zones and regs for HA
+choose right Mach type
+GPU for math and graph int apps
+use disc whenever possible
+fault toler and non crit - preem or spot inst
+use labels for env, team, BU etc
+
+scenarios:
+
+pre req for compute en - proj, bill acc, compute eng APIs enabled, search for api, manage api, disable/enable
+dedic h/w for compl, lic and mgmt needs, usually shared h/w - compute eng, sole-tenant nodes, create node grp, node temp, 
+and affinity labels - for vm to depl in this, has a spec format for that label, autoscaling option also
+create vm, mgmt, sole-ten labels, group:IN:a
+100s vms, auto os mgmts - compt eng, go to vm manager, os patch mgmt, enable it and use it
+login to vm , install s/w - ssh or script, image or temp etc
+do not expose vm to internet - no ext ip address
+allow http traffic - firewall rules
+
+------------------------------------------------
+
+GCloud:
+
+CLI to interact w/ gc resources
+create/up/del and deploy
+some serv have their own:
+Cloud storage - gsutil
+Cloud bigq - bq
+Cloud bigtable - cbt
+Kubernetes - kubectl
+
+how to install - part of gc sdk, needs python
+don't need to install, can use cloudshell, top right cmd icon in console
+FREE OF COST
+also has online code editor
+
+gcloud --version
+clear
+gcloud init, need to authorize
+each project has globally unique id
+can setup def reg and zone for compute also
+core - account and project
+compute - reg and zone def
+
+gcloud config list
+
+
+4 sections
+component_manager, has disable update check
+
+compute has gce_metadata_read_timeout_sec
+def zone and reg
+
+core has 
+acc
+disable usage reporting and project
+
+metrics has env
+
+upcoming commands:
+
+gcloud config list account - acc name
+gcloud config list core/account 
+looks under core by default
+
+gcloud config list compute/region
+gcloud config set compute/region VALUE
+
+verbosity for lot of info
+gcloud config core/verbosity VALUE(debug)
+gcloud config set project value
+or core/project
+
+gcloud config set --help
+gcloud config list --help
+
+can do unset also
+
+gcloud config list project
+gcloud config configurations create/del/activate/list/desc
+
+create command activates ALSO IMP
+
+gcloud config configurations list
+gcloud config configurations activate my-default-configuration
+gcloud config list
+gcloud config configurations describe my-second-configuration - to see w/o activating, is-active:false
+gcloud config configurations delete <name>
+-----------------------------------------------
+IMPIMP
+gcloud grp subgrp ACTION
+grp - compute/iam/funcs etc
+subgrp - components of that spec serv, eg: instances, images, inst temp or mach types, list reg or zones etc
+ACTION - create/list/start/stop/desc
+
+gcloud compute instances list
+gcloud compute instances create, error thrown
+gcloud compute instances create my-first-instance-from-gcloud, def mach type n1-std-1
+gcloud compute instances describe my-first-instance-from-gcloud, disk n all info given, in-depth
+gcloud compute instances delete my-first-instance-from-gcloud
+gcloud compute zones list
+gcloud compute regions list
+gcloud compute machine-types list, type and reg it is in
+gcloud compute machine-types list --filter zone:asia-southeast2-b, mach types avail in this reg/zone, cpu and mem shown
+gcloud compute machine-types list --filter "zone:(asia-southeast2-b asia-southeast2-c)"
+gcloud compute zones list --filter=region:us-west2
+gcloud compute zones list --sort-by=region
+gcloud compute zones list --sort-by=~region, reverse sort order(z to a)
+gcloud compute zones list --uri, outputs only the URI (Uniform Resource Identifier) for each zone
+, like: https://www.googleapis.com/compute/v1/projects/my-project/zones/us-central1-a
+gcloud compute regions describe us-west4, gives details like:
+Available zones in that region
+Quotas
+Status (e.g., UP or DOWN)
+Features supported in that region
+
+ops to create inst
+--machine-type=n1-standard-1
+--custom-cpu --custom-memory --custom-vm-type
+6, 3072MB, n2
+--image --image-family, --source-snapshot, --source-inst-temp, 
+--service-account
+--zone
+--tags
+--preemptible
+--restart-on-failure
+--no-restart-on-failure
+--maintain-pol MIGRATE/TERMINATE
+--boot-disk-size/type
+--boot-disk-auto-delete def
+--no-boot-disk-auto-delete
+--deletion-protection
+--no-deletion-protection def
+--metadata (startup script)
+shutdown script also
+--network, --subnet
+--accelerator="type=nvidia...", GPUs
+
+
+gcloud compute instance-templates list
+gcloud compute instance-templates create instance-template-from-command-line
+gcloud compute instance-templates delete instance-template-from-command-line
+gcloud compute instance-templates describe my-instance-template-with-custom-image
+
+
+
+compute inst, def reg and zone IMP
+
+1) centralized config, in ui in vm in settings, settings, proj info add metadata, appl to any user in spec project
+2) Local gcloud config, like we did alr
+3) command specific, for each command we can specify
+
+priority:
+3>2>1
+
+MOVE COMMAND IS DEPRECATED
+Unfortunately, there is no direct way to move instances between zones or regions like before.
+You need to use a combination of creating a snapshot, 
+creating a new instance from that snapshot in the destination zone, and then deleting the original instance if needed.
+
+
+--delete-disks=VALUE(all or boot or data)
+--keep-disks=VALUE(all or boot or data)
+
+--source-instance (for inst templates), spec zone also tho, where it is running
+
+creating inst from temp, 
+--source-instance-template=name
+
+delete vm images also, as they take space and are billed.
+
+----------------------------------------------------------------
+
+Instance Groups:
+
+group of vm inst
+managed as a single entity
+2 types:
+1) managed (MIG) - identical vms created from template, has auto scaling(replace dying with new), auto healing and managed releases
+2) unmanaged - vms with diff configs, no fea as above, not reccommended
+
+location can be zonal or regional(obv HA)
+
+MIG:
+inst temp
+maintain cert no of inst(min 2 etc)
+auto scaling 
+auto healing - detects appl fail using healthchecks
+add LB to distri load
+create reg MIGs, mult zones
+Release new app vers w/o downtime - 
+1) rolling updates - gradual deployment, slowly to all
+2) canary deployment - test new ver in a grp, then roll it out to all
+
+creating MIG:
+inst temp is MANDATORY
+config autoscaling also - min,max, autoscaling metrics, or Stack Driver metrics, cool down period - scale up/down not too frequent, 
+scale in controls- no sudden drop in vms, 
+auto healing, initial delay(wait till check - let app to initialize)
+
+inst temp, create inst grp 
+or under vm and inst grp(has health check tab also)
+managed - stateless(web apps, REST APIs)/stateful(DB based, data persisted, no inst removed until data saved), using temp we create
+unmanaged - select vms one by one
+
+autoscale modes - on, scale out(only add, not remove) and off
+predictive scaling - gc looks at historical load and predicts to be ready for scaling
+scale-in controls
+healthcheck - protocol, http for webapp, tcp etc for n/w
+healthy and unhealthy thresh - consec succ/fail to be consid healthy/unh
+port mapping also there
+
+
+updating MIG: IMP
+
+Edit in UI
+rolling update- grad update of inst to new inst temp
+spec new temp, can also spec temp for canary temp
+2 inst at a time or test a new set first then update all
+when to update - immed - proactively(automatic), or opportunistic (selective)- during scaling
+max surge - how many new inst added at any pt in time (temp add inst)
+max unavail - during upgr, how many inst offline (max unavail)
+
+rolling restart/replace - grad restart/replace of inst in the grp, same temp restart
+config same options as above here also
+
+
+restart/replace option in top also
+
+Scenarios:
+
+mig to surv zonal fail - reg mig deploy (multi zone)
+vm of diff config in same grp - unmanaged ig
+preserve vm state - stateful mig
+HA in MIG even when h/w s/w updates - avail policy w/ right vals, auto restart enabled and on-host main is migrate
+unhealthy inst to be auto repl - config healthcheck n self healing
+avoid freq scaling - config cooldown per and initl delay
+
+Commands:
+IMP - instance templates are no longer available in global scope but in the specific region.
+
+instead of just providing the name of the template we need to provide the URL in the specific format
+
+gcloud compute instances create 
+my-test-vm 
+--source-instance-template=https://compute.googleapis.com/compute/v1/projects/<<PROJECT_ID>>/regions/<<REGION>>/instanceTemplates/<<INSTANCE_TEMPLATE_NAME>>
+
+--health-check
+--intial-delay
+--set-autoscaling --max-num-replicas=10(mandatory) --mode=off/on/only-scale-out
+--cool-down-period(def 60s)
+--scale-based-on-cpu --target-cpu-utilization=60 etc
+--stop-autoscaling
+need to give --zone always
+
+gcloud compute instances create my-test-vm --source-instance-template=my-instance-template-with-custom-image
+gcloud compute instance-groups managed list
+gcloud compute instance-groups managed delete my-managed-instance-group
+gcloud compute instance-groups managed create my-mig --zone us-central1-a --template my-instance-template-with-custom-image --size 1
+gcloud compute instance-groups managed set-autoscaling my-mig --max-num-replicas=2 --zone us-central1-a
+gcloud compute instance-groups managed stop-autoscaling my-mig --zone us-central1-a
+gcloud compute instance-groups managed resize my-mig --size=1 --zone=us-central1-a
+gcloud compute instance-groups managed update my-mig <update stuff>
+gcloud compute instance-groups managed recreate-instances my-mig --instances=my-mig-85fb --zone us-central1-a, del existing and recreate them again
+can also specify which inst to recreate
+update-instances also, minimal action = refresh/restart - not delete and recreate
+most disruptive allowed action, max what is allowed to do
+gcloud compute instance-groups managed delete my-managed-instance-group --region=us-central1
+
+update inst temp - set inst temp, spec template
+config will be updated immed, but, roll out we can configure (as we did in UI)
+we can do recreate or update instances
+or
+rolling-action start-update
+can be restart, max-surge can be config in number or %
+replace, del existing and create w/ new temp, can also do max-unavail,
+replacement-mehtod, subs - name of inst will change, recreate keeps same name (IMP)
+directly update all, rolling-action start-update
+canary version, --canary-version=temp name, --target-size etc
+
+-------------------------------------------------------------------------------
+
+Load balancing:
+
+distri user traffic across an app in single or mult zones/reg
+fully distri, s/w def managed serv
+fea:
+healthcheck, route to healthy inst
+auto scaling
+global LB w/ single anycast IP, one endpoint to hit for global traffic
+also supports internal LB
+enables HA, scalability, resiliency
+
+IMP protocols used:
+
+app layer - http/s, smtp -> make REST API calls and send emails; http stateless req/resp, https secure ver of http certs used, smtp for email, ftp files
+transport layer - tcp, tls, udp -> are bits and bytes transferred properly(resp for); rel>perf for tcp, secure tcp is tls, perf>relia for udp
+n/w layer - ip -> bits and bytes(packets); unreliable
+
+each layer uses layers beneath it
+
+some high perf app talk at n/w layer directly, most talk at app layer
+eg: Gaming apps, video streaming apps - sac rel for perf
+
+
+LB in networking servs, 
+types: http, tcp, udp
+internet facing or internal, 
+udp is single reg, rest can be multi-reg also
+
+classic or new one w/ advanced traffic mgmt
+
+3 configs:
+backend - redirect to what (eg MIG)
+create backend serv or bucket
+
+host and path rules - how to redirect
+simple
+or
+advanced, url redir and url rewrite
+paths for servs, send to diff backends etc (microservs)
+
+frontend - what user hits
+proto and port
+
+balancing mode: based on util or rate of req
+can enable CDN
+
+backend - rec traffic from cloud LB
+frontend -  add at which cloud LB is avail, where user sends req, if SSL, cert also assigned
+host and path rules - redirect rules, based on path we redirect to diff microservs or redirect based on host or http headers or methods
+
+SSL/TLS Termination or Offloading:
+
+client to lb - over internet - https recc, ssl cert
+lb to vm inst - through google int n/w, http is also ok
+ssl/tls term or off - client to lb using https/tls and lb to vm using http/tcp, reducing load on inst, directly handle req
+
+ 
+how to choose LB: (IMP)
+
+ext traffic - complex, type of traffic
+http/s - classic https lb and new one, global or reg
+tcp -  ssl offloading - ssl proxy, global or ipv6 lb then need tcp proxy, preserve client ips? - if yes, then n/w lb else tcp prxy
+udp - ext n/w lb
+
+int traffic - easier, tcp/udp or http/s -  dir LB whatever we see offered, int LBs
+
+fea of LBs:
+IMP
+
+proxy - get req, change it and send to backend
+pass-through - to client directly, as is
+http  - 80 or 8080
+https - 443
+int http/s - reg int traffic
+ssl proxy - l4, global ext tcp w/ ssl offl
+tcp  proxy - l4, global ext tcp w/o ssl offl
+ext n/w tcp/udp - reg ext or tcp udp, pass though, can listen on ANY PORT
+int tcp/udp - int only, pass though
+
+scenarios:
+
+only health int get traffic - healthcheck
+HA - mult MIG, multi reg, LB across these
+mult microserv using same LB - indiv MIGs and backends for microservs then host and path rules, can route to cloud storage bucket as well
+global ext https across backend ints, across mult regs - ext global lb, classic  or adv
+global ext non-https across backend ints, across mult regs w/ ssl term - ssl proxy LB
+
+-----------------------------------------------------------------------------------------
+
+Managed servs in GCP:
+
+IaaS
+PaaS
+Faas - func
+Caas - container
+Serverless
+
+Iaas: h/w provider, rest me, virtualization of h/w
+Paas: plat prov by provider - os, h/w, app runtime, auto scaling, LB and avil, I need to do config, app code, data etc EG: Google App Engine
+
+Also PaaS:
+Caas - cont instead of apps
+FaaS - func running instead of apps
+dbs - PaaS
+
+CaaS:
+
+microserv archs
+gives flexibility to innovate
+deployments become complex
+one way of deploying?
+containers - docker images for each micro - cont everything needed to run it, app runtime + code and depend -> runs same way on any infra incl local
+
+in general are lightweight - do not have guestOS(Like VMs), cont are isolated from one another, ARE CLOUD NEUTRAL
+run anywhere
+
+containers
+docker eng or cont runtime
+host OS
+cloud infra
+
+
+container orchestration:
+
+eg - kubernetes
+
+cont image and config, orch manages deployment into clusters, clusters can have mult servers
+fea: 
+autoscaling
+service discovery - endpoint w/ cont orch, service can just ask it for other serv
+LB
+resiliency - heathchecks
+zero downtime deployments - strat for releases
+
+SERVERLESS:
+
+no worry about server, config, scalab etc, just focus on code
+
+DOES NOT MEAN NO SERVERS, JUST THAT WE DO NOT HAVE VISIBLITY TO THEM
+
+1) NO INFRA WORRY
+2) AUTOMATED HA 
+3) PAY FOR USE (requests/invocations)
+
+eg: FaaS, Google Functions
+
+imp fea:
+
+1) no infra worry, scala, HA
+2) pay for use
+3) not paying for servers/nodes/instances (nothing related to infra)
+
+
+sometimes we are charged for vCPUs even when serverless
+
+aws fargate
+google app engine
+
+both have no infra worry, can scale down for 0 instances, but pay for number and type of instances
+
+complete serverless:
+aws lambda, azure/google functions
+
+classification of compute servs: IMP
+
+compute engine 	  - IaaS
+Google Kuber engine - PaaS (CaaS) - answer for conatinerized servs
+App Engine          - PaaS (CaaS/Serverless -ish)
+Cloud Func          - PaaS / serverless
+Cloud Run           - PaaS (CaaS /serverless) - no clusters used
+
+---------------------------------------------------------------------------
+
+Google App Engine (GAE):
+
+
+one of the earliest managed servs
+simplest way to dep and scale apps
+end to end app mgmt
+
+support: go, java, .net, node.js, php etc
+can use custom runtime
+supports containers
+connects to other servs
+pay for resources prov, not usage
+
+fea:
+Autoscaling and LB
+platform updates
+healthcheck
+versioning and traffic splitting
+
+
+compute engine vs app engine:
+infra vs 		platform (serverless-ish)
+flex vs 		low flex
+more resp vs 	less
+
+
+app engine envs:
+
+standard : apps run in lang spec sandboxes
+complete isol from OS, disk and other apps
+v1 old vers of runtimes - restric n/w access, spec libs only allowed - not for java or go
+v2 newer vers, recc, full n/w access and libs
+
+flexible : apps run w/ docker conts
+makes use of compute eng VMs, supports any runtime
+provides access to background processes and local disks
+
+component hierar:
+
+one app per project
+
+app (Highest) - cont for all servs as part of project
+service - mult microservs or app components, can has own setting, also called (modules)
+ver - each has its own code and config, can run in one or more inst, mult can co-exist, rollback and split traffic
+inst - vm insts
+
+env fea: IMP
+manual - full control
+basic scaling  - ad-hoc workloads
+auto - contin flow of traffic
+
+fea			std							flex
+pricing		inst hrs						vCPU, mem disks and persistent disks
+scaling		manual/basic/auto					manual and auto
+scaling to 0	yes							no, min 1
+inst startup time	secs							mins
+rapid scaling	yes							no
+max req timeout	1-10 m						60m
+local disk		mostly(not py and php), can write to /tmp	yes,ephemeral, new disk on startup
+ssh for debugging	no							yes
+	
+
+
+Scaling insts:
+
+auto 	 - based on load, can set metrics, recc for constantly running workloads
+basic  - create inst as and when req received, for ad-hoc workloads, inst shutdown if 0 reqs, high latency might be there, not for app engine flex,
+	   can set idle timeout
+manual - adjust no of inst manually over time, max control
+
+
+GCloud Commands:
+
+new project
+go to app engine, 
+enable API for it - app eng admin API
+
+now create project
+select reg - permanent
+lang
+env
+go to cloud shell to deploy services
+can open editor also for coding
+editor above, cmd prompt below
+open folder
+2 servs drag and drop into explorer part
+readme alr there
+ls it, it shows up
+
+app.yaml - config for app engine, like runtime for our py code
+main.py - code
+req.txt - depend of specific app (like pom.xml), like flask(python rest api)
+
+
+while in def serv folder, 
+gcloud app deploy
+but first, config to be set for project
+ver given by app engine auto if we don't give
+
+descriptor - app.yaml (default)
+access to bucket denied, need storage acc to store these files 
+deploy package is created and stored in storage acc
+cloud build is ci/cd serv which needs access to this for deployment
+
+IAM - config perms to ppl and apps/servs, 
+edit member, new role, storage obj viewer perm
+save
+
+app eng dashboard has metrics based on vers etc
+billing status, cost, load on app
+app errors, server errors, client errors etc
+
+see services also, versions also
+instances
+
+
+cd default-service
+gcloud app deploy
+
+gcloud app services list
+gcloud app versions list
+gcloud app instances list
+
+gcloud app deploy --version=v2, either app engine assigns or we give ver num
+v1 still running
+once deployed, v2 shows up, traffic to it now
+
+gcloud app versions list
+
+gcloud app browse, url for active ver
+gcloud app browse --version 20210215t072907, url for spec ver
+<ver>-dot rem url after https
+so v1 still running
+
+gcloud app deploy --version=v3 --no-promote
+no traffic to new ver, control migration to it
+
+gcloud app browse --version v3
+gcloud app services set-traffic split=v3=.5,v2=.5 -> error, typo, should be "splits" IMP
+gcloud app services set-traffic splits=v3=.5,v2=.5
+splitting traffic by IP, def way IMP
+
+watch curl https://melodic-furnace-304906.uc.r.appspot.com/, send GET to this url, watch - every 2 sec
+
+gcloud app services set-traffic --splits=v3=.5,v2=.5 --split-by=random, now not by IP
+
+can also split by cookie
+
+"Migrate Traffic" in UI
+
+we specify service name in app.yaml, else called default by app engine
+<service name>-dot-remaining usual url
+
+cd ../my-first-service/
+gcloud app deploy
+gcloud app browse --service=my-first-service
+ 
+gcloud app services list
+gcloud app regions list
+ 
+if only give gcloud app browse then go to default service
+
+gcloud app browse --service=my-first-service --version=20210215t075851
+gcloud app browse --version=v2
+gcloud app open-console --version=v2
+gcloud app versions list --hide-no-traffic
+
+
+we can have only upto 22 projects in free tier IMP
+
+
+Stuff we can give in app.yaml: IMP
+
+runtime
+service name
+api ver
+inst class
+env
+inbound serv - warmup
+
+env vars
+
+handlers - url and its corres script, 
+
+auto scaling configs - max, min, metrics based type of scaling
+
+
+Request Routing:
+
+1) using urls
+
+projectID.regID.r.appspot.com - def serv called
+service-dot-projectID.regID.r.appsot.com - spec serv called, def ver
+ver-dot-service-dot-projectID.regID.r.appsot.com - spec ver of spec serv called
+replace -dot- w/ '.' - custom domain if using custom domain
+
+app eng - appl settings, attach custom domain
+can register a new domain also
+
+2) using dispatch.yaml file
+
+3) Using cloud LB w/ app engine as backend
+
+
+deploy new ver w/o downtime:
+
+1) gcloud app deploy, new ver gets all traffic
+
+2) --no-promote -> shift traffic post testing slowly or all at once
+
+3) gradual migration -> --migrate option -> NOT IN FLEX APP ENGINE ENV IMP
+
+4) splitting traffic
+
+splitting traffic:
+
+--split-by
+
+1) IP Based, can change and can cause issues, corp VPNs have single IP, then again issue, 
+2) Cookie based, GOOGAPPUID, route to appr ver, can be generated by app
+3) Random 
+
+Gcloud options:
+
+gcloud app create/browse url and browser open/deploy/describe/open-console gives url to gcp console to manage it, --logs to go to logs directly etc
+--image-url for flex cont based deployments
+--stop-previous-version -> so old vers are stopped, def do not stop
+
+
+describe:
+This command returns a JSON or YAML output (depending on your configuration) that includes:
+
+Service name
+Split traffic configuration (e.g., how traffic is distributed across versions)
+List of versions currently serving traffic
+Traffic allocation percentages
+Instance class and scaling settings (if configured at the service level)
+
+
+
+app engine inst:
+
+gcloud app instances delete/describe details rel to spec inst/list/scp copies files to/from app engine inst/ssh
+by def active ver of service
+
+for list -> we might get 0, since app engine std scales down to 0 if no reqs, so send some reqs, then inst up
+
+--hide-no-traffic, vers of serv not listed which are not getting any traffic (config to receive traffic)
+
+
+Cron Jobs:
+
+describe in cron.yaml
+cron:
+	- desc: "daily summary job"
+		url: /tasks/summary
+		schedule: every 25 hours 
+etc
+
+other imp yamls:
+
+dispatch.yaml for routing of services
+queue.yaml to manage task queues
+cron.yaml
+
+Roundup:
+App eng is regional, dep across zones, cannot change reg
+good for simple microservs
+not as powerful as kubernetes
+std v2 for supported languages
+flexible for oth/cont, does not scale down to 0, no basic routing
+
+use a comb of resident and dynamic inst, some no of inst always running - resident
+use all dynamic if cost sensitive
+
+ 
+scenarios:
+
+2 app eng apps in same project - not possible
+2 app eng srvs in same app     - possible, mult ver also possible
+app eng to diff reg            - not possible, fixed on creation
+canary deployments             - possible, use --no-promote, then shift traffic later
+
+
+---------------------------------------------------------------------------------------
+
+Google Kubernetes Engine (GKE) - IMP
+
+
+cluster mgmt and upgrades
+diff vms, h/w and s/w configs
+
+auto scaling
+serv dis
+self-heal and healthcheck
+LB
+0 downtime deployments
+
+auto-repair and auto-upgrade
+
+pod (incr inst for spec microservice) and cluster (incr no of nodes) autoscaling
+cloud logging and monitoring
+container optimized OS
+persis disks and local ssds supported
+Recently a new GKE mode is introduced - Autopilot (simplifies cluster management).
+
+IMP
+pod has containers 
+node is a vm that runs pods
+cluster has group of nodes
+
+#####################################################################
+Commands:
+IMP
+
+create cluster w/ set of nodes
+search for kubernetes engine
+enable API first
+std -> complete ownership, pay per node
+autopilot -> delegate it to GKE, pay per pod, optimizes costs
+
+gcloud container clusters create
+
+zonal/regional
+by def has 3 nodes, 2 vcpu each, 12 GB , mem
+
+
+
+gcloud config set project my-kubernetes-project-304910
+
+VVIMP, connecting to cluster
+
+gcloud container clusters get-credentials my-cluster --zone us-central1-c --project my-kubernetes-project-304910
+							name							projectid
+
+
+kubectl create deployment hello-world-rest-api --image=in28min/hello-world-rest-api:0.0.1.RELEASE
+				  dep name				 name of image, pushed to dockerhub
+dockerid/image_name:image_tag
+
+kubectl get deployment
+look at dep details
+
+kubectl expose deployment hello-world-rest-api --type=LoadBalancer --port=8080
+access this dep, expose it to the outside world, we used LB here
+kuber serv created
+
+kubectl get services
+def serv alwasy running called kubernetes
+
+kubectl get services --watch
+
+curl 35.184.204.214:8080/hello-world, ext IP to use serv over the internet
+<ip of LB>:<port on which it is exposed>/endpoint
+
+can add node pool in GKE UI, type of nodes we can config, image also
+def 1 pool w/ 3 nodes
+workloads - what's running 
+each inst of app/serv is called a pod
+exposing serv
+also use yaml to deploy, given template in UI
+serv and ingress shows serv and ingress is collec of rules routing traffic to those servs
+
+kubectl scale deployment hello-world-rest-api --replicas=3
+incr PODS of the serv(insts)
+
+
+gcloud container clusters resize my-cluster --node-pool default-pool --num-nodes=2 --zone=us-central1-c
+now we're incr vms (nodes), since we're resizing node pool, give its name, cluster can have mult node pools
+
+kubectl autoscale deployment hello-world-rest-api --max=4 --cpu-percent=70
+prev we resized manually, we need to autoscale, so tell it, this is for PODS(inst)
+
+gcloud container clusters update <name> --enable-autoscaling --max-nodes=...........
+
+
+kubectl get hpa
+HPA - horizontal pod autoscaling
+
+kubectl create configmap hello-world-config --from-literal=RDS_DB_NAME=todos
+deployment configs, we giving db name here
+
+
+kubectl get configmap
+kubectl describe configmap hello-world-config
+kubectl create secret generic hello-world-secrets-1 --from-literal=RDS_PASSWORD=dummytodos
+secrets config, like pswds, type of sec is generic here
+
+
+kubectl get secret
+1 is default always created
+
+kubectl describe secret hello-world-secrets-1
+won't show pswd, just that what secret it is
+
+edit UI yaml instead of commands all the time
+edit it in UI and save
+declarative style
+
+command are imperative style
+IMP
+
+kubectl apply -f deployment.yaml
+to use a yaml file we have for deployment
+kind: deployment or service
+
+can also set def cluster in config under container category
+
+nodeSelector - cloud.google.com/gkenodepool - to use spec node pool for deployment
+
+gcloud container node-pools list --zone=us-central1-c --cluster=my-cluster
+kubectl get pods -o wide
+
+kubectl set image deployment hello-world-rest-api hello-world-rest-api=in28min/hello-world-rest-api:0.0.2.RELEASE
+                             dep name             cont name            image
+same dep managing both releases
+
+kubectl get services
+kubectl get replicasets
+kubectl get pods
+kubectl delete pod hello-world-rest-api-58dc9d7fcc-8pv7r
+new one auto launched since replicas given is 2
+
+ 
+kubectl scale deployment hello-world-rest-api --replicas=1
+kubectl get replicasets
+gcloud projects list
+ 
+kubectl delete service hello-world-rest-api
+kubectl delete deployment hello-world-rest-api
+gcloud container clusters delete my-cluster --zone us-central1-c
+
+
+master node - manages cluster - control plane
+components:
+api server - handles all comm for cluster, inside and outside
+scheduler - decides placement of pods, which node gets the pod/s
+control manager - deployments and replicasets, healthcheck
+etcd - distri db to store state of cluster
+
+
+worker nodes - run workloads
+components:
+runs pods
+kubelet - manages comm w/ master node
+
+GKE Cluster types:
+zonal       - single zone, 1 CP, 1 master node, all nodes run in same zone
+multi zonal - mult zones, single CP, nodes running in mult zones
+regional    - mult regs, replicas of CP runs in sep zones of given reg, nodes run in same zones as CP
+pvt cluster - VPC native cluster, nodes only have inernal IPs
+alpha clusters - alpha APIs for testing, ealy fea APIs, testing new K8 features
+
+PODS:
+smallest deploy unit of kuber
+has 1 or more conts
+assigned an eph IP add
+all cont in pod share - n/w, storage, IP, ports and volumes(shared persis disks)
+status: running/pend/succ job is done /failed/unknown master unable to find out
+
+Dep:  
+for each microservice
+single dep represents a single mic w/ all its vers/releases
+manage new rel w/ 0 downtime
+
+
+Replica Set:
+set of pods running for a spec ver of a micserv
+k creates new replicaset for a new ver
+
+services in k:
+each pod has own IP
+pod failure replaced by replica set
+serv url continues to work
+new rel, old ver pods replaced w/ new rel pods
+
+create serv - exposes depl to out side world, users not affected w/ new rel
+
+3 types of servs: IMP
+LB        - using a cloud prov LB, can create indiv LB for indiv microserv - not recc always
+ClusterIP - no need to expose serv ourside cluster, internal serv, cluster-internal IP used to expose serv
+NodePort - Each Node's IP at static port, if do not need ext LB, create one ingress and route to all microserv using that, ingress under serv of kuber
+
+GCR: Google Container Registry:
+
+fully managed CR by GCP, alter dockerHub, can secure images also
+Naming: HostName/ProjID/Image:Tag
+Eg:     gcr.io/prjname/helloworld:1
+Pvt by def
+
+
+Roundup:
+replicate across mult zones for HA
+some cpu reserved by CP
+core: %
+1st: 6
+2nd: 1
+3/4: 0.5
+rest: 0.25
+
+create dockerfile, build image, test locally
+push it to cont repo
+
+kuber supports stateful depl, like kafka, redis 
+use statefulset
+
+serv on nodes for log and monit - create a pod in each node for that
+daemonset - one pod on every node for background serv
+
+enabled by def  - cloud monit and logging
+can use these, export to pub/sub or big query for anal
+
+
+Scenarios:
+
+keep costs low and opt GKE impl - preemp vms, reg choice, use disc, mach types, choose right env type, can mult node pools, auto depl 
+eff and complete autoscaled gke sol - config HPA - should have suff nodes and cluster autoscaler for node pools
+need to try untrusted 3rd part code - use sep node pool, do not impact other workload, use GKE sandbox
+enable only int comm - ClusterIP deployment type
+my pod stays pending - node pool issue, incr no of nodes
+my pod stays waiting - pblm w/ pulling image or access issue
+
+update cluster to enable autoscaling
+node-pools create for new node pool
+list images in cont reg
+
+apply -f dep.yaml for create or update or create dep w/ command
+expose dep  - for use
+scale dep  - for PODS
+autoscale dep
+rollout undo dep to rollback dep
+
+
+for deleting this stuff:
+
+del serv - kubectl, del LB also
+del dep  - kubectl
+del cluster - gcloud, give zone else error
+
+node pools - grp of nodes in cluster w/ same config
+
+
+---------------------------------------------------------------------------------------------------
+
+Google Cloud Functions:
+
+
+exec code on some event
+write in mult languages
+no worry about servers/ scaling / HA, only code
+pay for use - invocations, compute time, mem and cpu prov
+time bound, def timeout - 1 min, can config upto 60 m
+2 prod vers: gen1, gen2 - built on top of cloudRun and Eventarc
+
+concepts:
+event
+trigger - resp to event
+func - take event data and perf action
+can be triggered from: cloud storage, pub/sub, http calls, firebase, stack driver logging
+
+in UI:
+cloud func - search
+enable API
+
+gen1 timeout - 9 m, max mem - 8 GB
+gen2 timeout - 60 m (https), max mem - 16 GB
+
+create func
+env - gen1 and gen2 
+name
+reg
+url settings, auth etc
+trigger type 
+runtime
+build
+connec
+sec
+timeout
+
+next
+runtime and code
+might need cloudbuild API for runtime (CI/CD toll to deploy cloud func)
+entry point
+
+in testing we can test the func
+trigger url
+logs aswell
+
+
+no server mgmt
+auto spin up and back down in resp to events
+they scale horizontally
+NOT ideal for long running processes
+
+Cloud Func GEN2:
+
+longer req timeout
+larger inst sizes, upto 16GB w/ 4 vCPUs
+concurrency - upto 1000 reqs
+gen1 - only 1
+mult func revs and traffic splitting - since built on cloudrun
+support for 90+ event types
+gen1 - only 7
+
+traffic split from cloud run for versions of those functions
+
+cold start - new func inst init takes some time, longer time for new reqs, pblm w/ serverless arch
+can config min no of inst to counter that - but costly - min no of inst
+
+main gen2 adv - one inst mult reqs - concurrency, max 1000
+gen1 - only 1
+
+in cloud run - set concurrency
+edit and deploy new rev, under cap - max req per container, def 1 but can set higher
+
+using gcloud, deploy cloud funcs:
+
+gcloud functions deploy func_name
+
+op1 - docker registry, or art registry
+op2 - docker repo
+op3 - gen2 need to give for gen2, def is gen1
+op4 - runtime
+op5 - service account, for storage/db rel servs, def gen1 - app engine acc, gen2 - def compute serv acc
+op6 - timeout
+op7 - max int
+op8 - min int
+op9 - source code zip file in cloud storage OR source repo or local file system code file
+op10 - trigger, http, bucket, pub/sub, filters in event arc [ONLY GEN2]
+
+------------------------------------------------
+
+Google Cloud Run
+
+easier way to deploy cont apps
+
+cont to prod in secs
+search for cloud run
+
+create serv:
+
+cont image url
+demo cont, or other or artifact repo
+opt - contin deploy new ver from source repo
+
+serv name
+reg
+ABOVE 2 CANNOT CHANGE
+
+cpu alloc and pricing - during req processing or always alloc
+
+autoscaling options
+
+ingress traffic
+authen settings
+secrets etc we can also config
+
+vv ez to deploy
+
+built on open std called Knative
+
+0 infra mgmt
+pay per use
+fully integ end to end dev exp
+no lang issues since cont
+easily portable
+
+can deploy in other cloud env as well
+
+created a serv, we have mult revisions in that
+
+get mertrics, logs, revs, triggers - ingress and auth, details - reg url and rev deployed, yaml - can edit it to update stuff and perms
+
+manage traffic under rev tab
+
+
+Anthos - run kubernetes clusters anywhere, cloud multi-cloud or on-prem
+
+Cloud Run for Anthos - deploy workload to anthos clusters running on-prem or on GCP
+
+gcloud run deploy serv_name --image --rev-suffix v1
+gcloud run revisions list
+gcloud run services update-traffic
+
+
+-----------------------------------------------------------------------------
+
+GCP Cloud KMS:
+
+diff data states:
+
+at rest - stored on dev or backup
+in motion/transit - being transferred across a n/w
+2 types:
+in/out of cloud
+within cloud
+
+in use - active data processed in a non-persis state, eg: RAM
+
+Encryption - 
+
+1st law of sec - Defense in Depth (IMP)
+encrypt all data - HD, DB, file sys, 
+b/w app and db also encrpyt(in transit)
+2 approaches - symm and asymm
+
+symm - same key for en and dec, choose right algo, sec encrypt key, how to securely share encrypt key
+
+asymm - diff key for en and dec, public and pvt, also called pub key cryptography, share pub key w/ everybody, pvt only w/ me
+
+cloud kms - serv in gcp to create symm and asymm keys, control their use also in gcp servs, provides api to en/ dec and sign data, use keys created on-prem
+integ w/ almost all gcp servs that need data encr,
+Google-managed key
+Customer-managed key
+Customer-supplied key
+
+Cryptographic Keys - takes us to kms serv, ENABLE API FIRST
+
+create key ring, like a key holder, attach mult keys to it, name and reg - can be global, 
+
+generated key or imported key or externally managed key NOT AVAIL FOR GLOBAL KEYS, 
+
+key name
+protect lvl, s/w or HSM - hardware sec module
+purpose, symm or asymm en dec, or asymm sign
+key type and algo, 
+rotation period
+create
+
+
+now use it
+vm inst, choose en type in disks, def is google managed key, select cust managed key then select
+but grant perm to use key also IMP
+
+---------------------------------------------------------------------------------------------------------
+
+GCP Storage:
+
+types:
+Block and File
+
+Block - hard disks, typically 1 of this type w/ 1 vm, some excep - for read only block devices, soon multi-writer disks as well
+can attach mult such devs to 1 vm, can be used as DAS direct-attached-storage or SAN storage-area-network(eg Oracle)
+
+File - file share to share w/ collegues, media workflows, organised and secure, shared by several vms, 
+
+GCP options:
+
+Block - 
+persistent disks - (boot disk, can attach other additional), on a n/w shared by vms, zonal - one zone or reg - mult zones, 
+local SSDs - same host as vm
+
+File - 
+Filestore - high perf file storage
+
+during creating a vm, add disk, blank/image/snapshot, type and size
+local ssd not avail w/ all machine types
+
+block are part of compute
+
+search for Filestore, enable API, separate APIs, can use w/ compute engine or kubernetes engine inst
+ssh into vm and attach it once allocated
+
+GCP Block Storage:
+
+local ssds - temp data, dies w/ vm, high I/OPs, enable live migration for maint events, data auto encrypt, cannot config encryp keys - google managed
+only few mach types support it, SCSI- choose multi queue for better perf and NVMe - choose NVMe enabled for better perf
+larger local ssds implies better perf, more vcpus also
+adv - fast I/Ops - caches etc, 
+disadv - ephemeral ,cannot detach and attach to another vm
+
+persis - more durable, life not tied to vm, prov capa, can incr size needed, perf scales w/ size, life indep from vm, can attach and detach, zonal and reg
+reg are 2* the cost
+use case - for custom db
+
+comparison:
+
+fea				per				local ssd
+attach to vm 		as a n/w drive		phy attached
+lifecycle			sep from vm			tied w/ vm
+I/O				lower				10-100* of persis
+snapshots			supp				not
+use case			perm storage		ephemeral
+
+
+Persis disk types:
+
+std 	   - HDD, pd-std , seq I/OPs (Big Data and batch progs) good, random I/OPs (transac apps) bad, cheapest, use case - cost eff big data
+balanced - SSD, pd-balanced, good, good, b/w, bal b/w cost and perf
+ssd 	   - SSD, pd-ssd, v good, v good, exp, high perf
+
+snapshots for per disks:
+
+Point-in-time backups
+sched them
+auto-del also after X days
+can be mult reg and reg
+share snapshots across projs
+create new disks and inst from snapshots
+are incremental, 2nd one cont only changes
+deleting snapshot only deletes data not needed by other snapshots
+keep similar data tog on a persis disk - OS sep, volatile sep and perm sep
+attach mult disks
+helps to org
+reccs - avoid take more often than hourly, can reduce perf, do during off peak hours, 
+	creating snapshots from disk quicker than from images
+	creating disk from image is faster
+	create image from snapshot, then use it to create disks
+
+under storage in vms, disks;snapshots and images
+
+while creating vm, keep boot disk under deletion rule when we click on change under boot disk, can do for created instance also,
+
+mult regional disk snapshot - us, eu, asia(APAC)
+del rule for snapshots in snapshot sched
+need to attach sched to a disk, edit disk and attach
+
+
+mach image != image
+mach image is created from a VM inst, cont everyt needed to create a vm inst, incl metadata and perms and data from one or more disks
+image only cont boot persis disk
+clone complete vm inst - mach image
+
+go to vm, 3 dots, new mach image
+
+(PD)snapshots vs images(custom) vs mach images vs inst temp(has only configs of an inst): IMP
+
+single disk backup - MI, PD, I
+mult disk backup - MI
+Differ backup - MI, PD - 2nd backup should cont only changes, I has all data
+inst cloning and repli - MI, I, INST TEMP
+vm inst config - MI, INST TEMP
+
+`````````````````````````````````
+gcloud compute disks list
+create from image, image fam(latest ver), source disk or snapshot
+kms key or project also can give
+
+can resize it also, only incr size is supported
+
+gcloud compute images <ops>
+
+deprecate image, --state=DEPRECATED
+export images, upload it to cloud storage
+
+
+scenarios - per disks:
+
+improve perf - incr size, add more disks, incr vcpus of vm
+improve dura - make them regional, 2* cost
+hourly backup - scheduling
+del old snapshots - in scheduling only
+
+
+Cloud Filestore:
+
+supports NFSv3
+prov capa
+suitable for high perf
+upto 320TB, 16GB/sec, 480k I/OPs
+HDD and SSD
+file storage, sharing and media workflows, sharing rel workloads
+
+global, reg and zonal resources:
+
+Global - image, snapshots
+Regional  - managed inst grps, reg per disks, inst temp
+Zonal - ZMIGs, instances, per disks, need to copy disk to diff zone for that inst to attach to it
+
+scenarios:
+
+vhigh iops data can be lost - local ssd
+high perf file sharing for mult vms - file store
+vm config w/ per disk data - MI
+launch vm w/ hardened os and cust s/w - custom image
+
+Object Storage:
+
+GCP Cloud Storage:
+
+search for cloud storage
+
+name bucket - globally unique and perm
+where to store data - reg, dual reg -> Iowa and south carolina /neth and fin / tokyo and osaka, multi-reg - us/ eu/ asia(APAC)
+
+storage classes: IMP
+
+durability- 11 9's (99.999999999)
+low latency, first byte in tens of ms
+unlim storage
+autoscaling
+APIs same
+committed SLA - IMP
+>=99.95 -> mult and dual reg for std
+>=99.9  -> std single reg, rest mult and dual reg
+>=99.0  -> rest single rega
+
+def class at bucket lvl, but change at lvl of object if we specify
+
+std		- short term and freq acc, no min stor dur, typical monthly avail >99.99 in mult and dual; 99.99 in single reg, 
+nearline	- <1 month, 30 days, 99.95 and 99.9, once a month avg access
+coldline	- <1 quarter, 90 days, 99.95, 99.9, onec a quarter
+archive	- <1yr, 365 days, 99.95 and 99.9, less than once a yr
+
+size it does not ask
+
+flexible
+inexpensive
+serverless
+infite scale
+key-value pair approach
+entire object as a unit, no partial updates
+uri for object, format: gs:/<bucket_name>/<obj>/<sub_obj> etc...
+access control at object lvl
+REST API to access and modify the objects
+CLI - gsutil
+client librabries for coding langs also - C++, C#, java, py, node.js, ruby, php
+can store all diff file types
+staging data place also
+most db servs can import data from here
+backups and archives here also
+multi-purpose
+
+bucket names can only cont lowercase letters, nums, hyphens, underscore and periods
+3-63 chars
+cannot start w/ goog or google (even misspelled)
+assoc to spec project
+each obj is ident w/ unique key
+max obj size is 5TB, but unlim such objs
+
+uploading and downloading objs:
+
+small files and no metadata - simple
+small files and metadata    - multi part
+larger files, recc for other also - resumable
+unknown obj size - streaming transfers
+file div into 32 chunks for large files and fast n/w - parallel composite upl
+
+
+simple download - objs to dest
+streaming download - unknown size
+sliced obj dwnld - large objs
+
+Object versioning:
+
+prevent accid del
+know obj history, audit
+enabled at bucket lvl
+live ver is latest ver
+del live obj - non-curr obj ver: del that, completely del
+old ver id by: object key + gener num (v1/v2 etc)
+reduce costs by del older non-curr ver
+
+Lifecycle Management:
+
+move auto b/w storage classes
+del old/unneeded files
+set conditions - age, created time, num of newer ver, storage class
+all satis - action happens
+
+2 types of acts:
+
+set storage class
+deletion
+
+allowed trans :
+
+std or mult re or reg to nearline/coldline/arch
+nearline to coldline and arhc
+coldline to arch
+
+can edit metadata of obj also
+
+encrypt w/ KMS:
+
+always server side encrp
+configure that to use GMK (def) or CMK - KMS, need storage acc to have access to KMS
+client - side encrp -> in adition , optional, by cust before upload, GCP does not know about keys used, adv - data in transit is encryp, 
+can be config in bucket in config
+
+scenarios:
+
+speed up large uploads - parll comp upl
+perm storage app logs for audit not expected to access - arch storage
+log files, once a quarter - coldline
+change stor class of exist bucket and exist objs - in config change def storage class, objs - update indiv, can do from cli as well
+
+
+CLI Commands:
+
+we use gsutil
+
+gsutil mb gs:://buck_name
+mb - make bucket 
+gsutil ls -a buck_uri
+-a -> non active objs also (non curr obj vers)
+cp - copy from one to another obj, dnlwd and upld also
+mv - move or rename objs
+encrp -> -o 'encryption_key=KEY'
+rewrite -s -> change stor class of obj
+
+
+versioning set on/off
+uniformbucketlevelaccess set on/off
+acl ch - access control for spec objs
+-User
+allAuthusers
+-u -> All users
+ch -> change perms
+perms: R/W/O (Owner)
+-g -> group
+-p -> public
+
+iam ch -> another way of perms
+MBR(type):MBR_n(name):IAM_Role
+
+signurl - temp way for giving access
+(signed url for spec obj)
+-d -> give time after that (10m eg), give key also
+
+------------------------------------------------------------------------------------
+
+Cloud IAM:
+
+iden to access res and perf actions - human and non-human
+
+iden, config res and allowed res and actions
+
+authen and author
+
+types:
+GCP user
+grp of users
+app in GCP
+app on-prem
+unauth users (smth public)
+
+granular control
+allow single user to:
+perf 1 action
+on spec res
+from spec IP
+in spec time window
+
+
+access to colleague to manage spec cloud storage bucket
+
+concepts:
+
+member - collegue
+res - spec cloud bucket
+action - upload/del objects
+
+google cloud IAM spec concept:
+
+Role - set of perm to perf spc actions on spec res, do not know about members - only has perms
+how to assign perm to member - create Policy - bind/assign role to member
+
+choose right role - either predef or custom, eg: StorageObjectAdmin
+Create Policy to bind role to member
+
+
+IAM Roles:
+
+types:
+
+Basic/primitve - owner - manage roles and assign perm and billing/ editor - view + edit/ viewer - read-only, earliest ver, not recc for prod
+Predef Roles - fine-grained, predef and managed by google
+Custom Roles - sometimes predef not suff, create your own
+
+
+search for roles, under iam and admin
+huge list of roles seen
+
+click on role, shows perms
+
+almost every role has projects.get and projects.list perms
+
+give good id for custom role
+role launch stage - alhpa, beta, gen avail or disabled
+add perms, filter them by serv then select
+
+
+storage admin - everthing
+storage object admin - for objects
+storage object creator - create obj
+storage object viewer - list and view
+all 4 have projects.get and projects.list perms
+
+
+Roles
+inside is perms
+inside is res/serv API perms
+
+policy - map roles, members and conditions
+perms not directly assigned to member, need to create role then bind it to mem using policy
+assign mult roles to single mem using policy
+
+
+policy object - list of bindings
+
+identify mem type by prefix:
+user, serviceaccount, group or domain
+
+policy troubleshooter - troubleshoot if unable to access smth, check API call (perm) w.r.t project for a member
+
+policy analyzer - analyze policies, maybe given excess perms
+
+we can have mult mems to same role also (obv)
+
+Commands:
+
+auth login
+auth revoke
+auth list
+
+set-iam-policy - overrides policy
+
+gcloud projects delete - totally safe, try it (deletes entire project)
+
+desc role - gives perms and stage
+can copy can existing role and change perms - easier and safer
+
+gcloud iam roles copy
+--source-role
+--destination=custom role name
+--dest-project=project to create role in
+def stage is ALPHA in which it is created
+
+
+gcloud compute project-info describe
+gcloud auth list
+gcloud projects get-iam-policy glowing-furnace-304608, mems and role, all bindings for that project
+gcloud projects add-iam-policy-binding glowing-furnace-304608 --member=user:in28minutes@gmail.com --role=roles/storage.objectAdmin
+gcloud projects remove-iam-policy-binding glowing-furnace-304608 --member=user:in28minutes@gmail.com --role=roles/storage.objectAdmin
+gcloud iam roles describe roles/storage.objectAdmin
+gcloud iam roles copy --source=roles/storage.objectAdmin --destination=my.custom.role --dest-project=glowing-furnace-304608
+
+
+service accounts:
+id by email add, proj_id-<serv eg: compute>@developer.gserviceaccount.com, no pswd assoc w/ it
+uses pub and pvt key-pair
+can't login via browser or cookie
+
+types:
+def, auto created from some servs are used, not recc, editor role by def
+user managed - fine grained, created by user, recc
+google managed serv accounts - we don't need to worry about them
+
+create serv acc, 
+name, give access/roles, can add conditions also, can grant users access to serv account also (optional)  - users or admins role
+users - use perms of it
+admins - manage perms for it
+
+under iden and api access, give serv account
+
+
+use cases:
+
+1) vm to cloud storage - create serv account, assign role, then it can access storage, no creds needed, google managed keys
+
+2) on prem to cloud storage - Long Lived perm needed, cannot assign serv acc to on-prem app, create serv account, 
+create serv account user managed key - json or p12, then use key to auth to serv  account using it get access
+gcloud iam service-account keys create
+
+cannot regen same key again, create new if lost
+
+set env var, GOOGLE_APPLICATION_VARIABLES and set it in path
+can use google client libs, use app def creds (ADC), by def use this, uses serv acc key file pointed to by env var
+then can auth to serv
+
+3) on prem to google cloud APIs - for short lived perms, few hrs or shorter, less risk than sharing serv acc keys, 
+cred types - oauth2, openid acconect, self-signed JWTs
+
+create serv acc, 
+mem assumes serv acc role, oath2.0 token created to get temp access
+serv to serv token - open id auth tokens
+
+
+scenarios:
+
+vm to bucket - vm serv ac
+vm to msg on pub/sub - vm serv acc
+serv an id or res - both, used to acc stuff, we give other mem this so a res also
+vm w/ def serv acc in proj A needs bucket in proj B - proj B add serv acc from A and grant access
+
+
+ACLs in buckets:
+
+who has access and what lvl
+IAM applies uniformly to all in bucket
+ACls can be customized for diff objs in bucket
+user gets IAM or ACL
+IAM for common prereq
+ACL for customized access
+
+2 types:
+
+uniform
+fine-grained, at object lvl
+
+signed URLs: allow user to res for limited time, no acc needed, perm to perf spec access for lim time, create key for serv acc, then create signed url
+
+expose public website from bucket:
+
+bucket name same as website name(or its DNS)
+copy files to bucket
+add index and html files
+grant allUsers access this bucket, give StorageObjectViewer
+public url for index.html
+
+------------------------------------------------------------------------------------------
+
+
+Databases in Google Cloud:
+
+org and peris storage for data
+
+imp concepts:
+
+avail - access data when needed, 4 9's of avail isvv good => 4.5 mins of downtime in a month, 99.95 is 22 mins, 5 9's is 26s
+have mult standbys avail, distri db in mult zones and regs
+
+dura - data avil after 10/100/1000 yrs, 11 9's is vv good, 1 M files for 10M yrs => we lose 1 file, we hate losing data since its lost forever
+mult copies of data in mult zones and regs
+it is costly however and having it all consis is tricky
+
+RTO - Recovery Time Objective => max acceptable downtime
+
+RPO - Recovery Point Objective => max acceptable period of data loss
+v small rpo and rto - hot standby and auto failover
+v small rpo and some rto - warm standby w/ min infra standby and scale it up when failure happens
+v low rpo and long rto - reg data snapshots, trans logs, 
+good rpo and rto - Fo to new server
+
+consis - mult dbs updated simul, 
+
+strong consis - sync replications to all replicas, slows down all trans
+eventual consis - async repli, lil lag before changes avail in all replicas, diff replicas might ret diff values, eg: social media
+read-after-write consis - inserts immed avail, updates are eventual
+
+transactions
+
+db snapshots, safety but makes db slow lil bit
+transaction logs, apply transac logs to last snapshot and be upto point
+standby db w/ replication, sync replication, take snapshot from standby, speed is there, db crash solved cuz standby, data saved
+db pblms solved
+
+
+Read Replicas - 
+
+reporting and anal apps on top of db, these only read data
+
+impacts db perf, so keep read replica, reduces load on master db, update it to master in case of failures, take snapshots from it
+
+categ of DB:
+
+rel - oltp and olap
+non-rel
+doc
+key value
+graph
+in mem 
+etc
+
+choosing db:
+
+fixed schema or schema less
+lvl of trans props - consis etc
+latency?
+transac per sec
+amt of data stored
+
+Rel DBs: predef schema w/ tables and rels, v strong transac capab - ACID, OLTP (online transac processing) 
+or OLAP (online anal processing) - std quer on huge amts of data
+
+OLTP REL DBs in GCP:
+
+large no of users make large no of small trans
+most trad apps
+popular dbs:
+mysql
+oracle
+sql server
+
+GCP OPTIONS: 
+
+Cloud SQL - postgre, mysql, sql server, upto a few TB of data, regional, 99.95%, ssd or hdds, upto 416gb ram and (upto 64) 30tb data, 
+mig local sql dbs to here
+auto en and backups, HA and FO, read replicas cross zone/reg/external, need auto backups and bin logging enabled
+auto storage incr w/o downtime, PIT recovery, can use DMS to migrate DB to here, export data supported using SQL and CSV
+prim and sec zones for HA, HA cannot be used as a read replica, zonal fail auto failover to sec inst
+
+Cloud Spanner - inf scaling, unlim scale (mult PB of data), 99.999% of avail (26s downtime), global apps w/ horiz scaling, vv exp compared to cloud sql
+MISSION CRITICAL (IMP), auto sharding, scales hori for read and write(not for cloud sql) just config no of nodes, cloud console to export data or 
+cloud data flow for auto export, no gcloud export option, need to enable its API
+compute capa usig nodes processing units in I/OPs or nodes straight up
+1 node = 1000 PUs
+100 PUs is the min, so 1/10th of a node
+tables, create table using DDL
+
+inst > db > table > schema, indexes, data and query
+
+can export data to cloud bucket also
+
+
+OLAP GCP:
+
+analyze PB of data
+eg: reporting apps, BI, anal sys, etc
+
+decide insur prem anal data form last 100 yrs
+
+GCP OPTIONS:
+
+BigQuery - PB scale , distri data warehouse
+SQL like commands to query data from massive datasets, offers trad and modern appr
+trad - storage and compute
+modern - realtime and serverless
+imports - load data from var sources incl streaming, csv/json etc
+export to cloud storage or data studio for data viz - csv and json with gzip compression - deflate or snappy /avro
+auto expire data - config table expiration - to have latest data only for data anal
+query ext data sources w/o having to store data in bigQ - can use temp or perm ext tables
+bq CLI tool
+estimate bigq queries before running: use UI console or dry run commands w/ bq, pricing calc - price for scanning 1 MB data
+
+
+OLAP vs OLTP:
+similar datastructures
+
+OLTP - row storage
+OLAP - columnar storage, each col stored tog, high compression, distrib data eff, distri data and processing across mult nodes
+
+
+NoSQL Databases:
+
+NoSQL - not only sql, 
+flexible schema
+evolves w/ time
+horiz scale
+tradeoff consis and transac for HA and perf
+
+GCP OPTIONS:
+
+Cloud Firestore/Datastore - doc db, acid transac, sql like queries and indexes, mobile and web client libs, few TB, small to big DBs
+its own query lang, GQL, flex schema w/ transac
+
+kind > entity, uses namespaces tp grp entities
+export only from gcloud
+
+firestore = datastore++
+
+modes:
+
+datastore - compatible mode, migrating data to firestore
+
+native - only firestore data, for new projects
+
+choice is perm for project IMP
+
+start a collection - doc ID, 1 or more docs, field name, type, value
+
+collec inside collec, in a doc, etc
+it is hierarchial
+
+indexes auto created but can create composite indexes
+
+can import/export from/to bucket
+
+
+Cloud BigTable  - managed, scalable, no sql wide col, not serverless, need inst - can use ssd or hdd, >10TB upto PBs big dbs, not for transac workloads, 
+			only single row trans, for anal and oper workloads, streaming data, huge streams of time-series data a use case
+
+HBase API Compatible
+cannot export data using gcloud or cloud console, ONLY java app or HBase commands
+cbt cli tool for it, NOT gcloud - IMP
+each table is sorted key-val map
+related cols in col families
+
+
+GCP OPTIONS for In-mem dbs:
+
+retrieve data form mem faster than disk, like redis, store persis data in mem, microsec resps
+
+eg: 
+Memory Store - Redis(ref data, sess store, low lat access w/ persis etc) and Memcached(pure caching)
+99.9% Avail SLA
+caching sess, sess mgmt, gaming, geospatial apps
+nodes we need to tell
+
+
+Commands:
+
+need to enable cloud sql admin API
+
+first create inst then db
+then connect to it
+
+gcloud sql connect my-first-cloud-sql-instance --user=root --quiet
+gcloud config set project glowing-furnace-304608
+gcloud sql connect my-first-cloud-sql-instance --user=root --quiet
+
+use todos, db name
+
+create table user (id integer, username varchar(30) );
+describe user;
+insert into user values (1, 'Ranga');
+select * from user;
+ 
+# Cloud Spanner
+CREATE TABLE Users (
+  UserId   INT64 NOT NULL,
+  UserName  STRING(1024)
+) PRIMARY KEY(UserId);
+ 
+ 
+# Cloud BigQuery
+bq show bigquery-public-data:samples.shakespeare
+bq query '<query_string>' --dry-run (if want to)
+bq extract
+bq load
+
+# Cloud BigTable
+gcloud --version
+cbt listinstances -project=glowing-furnace-304608
+echo project = glowing-furnace-304608 > ~/.cbtrc
+cat ~/.cbtrc, is a config file - can config projects and instances in it
+cbt listinstances
+
+Rel DBs import/import
+cloud sql
+gcloud sql export/import csv/sql
+for large dbs, use serverless mode
+
+Cloud Spanner - to/from cloud storage, uses cloud data flow
+
+BigQuery - cloud stor and others, bq extract/load
+variety of imports - cloud stor, batch loading using bigq data transfer serv - repeats daily etc, dataflow to setup streaming pipeline - serverless and fast
+and cost eff IMP
+eg: data store - cloud stor to bigq
+
+
+
+NoSQL db import/export data:
+
+Datastore/Firestore - to/from cloud stor - web concole, gcloud, REST API
+export entire db or set of collections
+
+gcloud datastore/firestore export/import --kinds --namespaces
+
+Cloud BigTable - cloud stor 
+create dataflow jobs
+format: avro/parquet/seqfiles
+
+dataflow and cloud stor MOST IMP
+
+ensure serv acc of that serv has access to read/write to cloud stor using ACL or IAM Role
+
+bigq, firestore, datastore do not need VM Config
+
+cloud sql and bigtable need
+
+---------------------------------------------------------------
+
+Pub/Sub
+
+Sync comm  - to log service, if log serv down, or if too many logs and then again down
+
+async comm:
+decouple app from logging serv using a topic, put those msgs on that topic, log serv picks them up whenever its ready
+
+publisher don't care about who's listening
+subscriber - picks up even if pub down
+scalability - incr log serv inst based on load
+durability of log msgs improved, msgs not lost
+
+
+pub/sub: 
+relia, scalable, fully managed asucn msg serv, backbone of HA and highly scal apps, auto scale to bills of msgs per day
+low cost - pay for use, event ingestion and stream anal
+push and pull msg deliveries
+
+create topic, pub send msgs, consumers process msgs by picking them up 
+HTTPS req to pubusub.googleapis.com
+
+
+subs - pull-> pull msgs whenever ready, HTTPS req to pubusub.googleapis.com, push - msgs sent to subs webhook endpoint, 
+
+very flexible
+pub to sub
+one to many
+many to one
+many to many
+
+
+create topic
+create subs to that topic
+each sub pulls a discrete set of msgs from topic
+if mult clients pulling from same sub - then msgs split b/w client, diff sub then each gets every msg
+
+pub send msg to topic
+msg indiv del to each sub, push or pull msg
+sub sends ack
+msgs removed from sub msg queue post ack
+
+
+
+topic export to bigq or cloud stor
+while creating sub - we specify if sub is pull or push
+push needs endpoint url
+msg retention period also we config, def is 7 days
+sub exp - def 31 days if no activity
+ack deadline, def 10 secs
+sub filter
+msg ordering
+dead lettering - max del attempts, if cannot be del - goes to dead letter topic
+retry policy also
+
+publish msg
+pull msgs from sub
+enable ack msgs
+
+can create snapshot - msg ack state of a sub
+lite topic and subs - zonal msging serv optimized for cost, sep API needs to be enabled for use
+
+COMMANDS:
+
+gcloud config set project glowing-furnace-304608
+gcloud pubsub topics create topic-from-gcloud
+
+gcloud pubsub subscriptions create subscription-gcloud-1 --topic=topic-from-gcloud
+gcloud pubsub subscriptions create subscription-gcloud-2 --topic=topic-from-gcloud
+
+--enable-msg-ordering
+--ack-deadline
+--message-filter
+
+etc
+
+gcloud pubsub subscriptions pull subscription-gcloud-2
+gcloud pubsub subscriptions pull subscription-gcloud-1
+
+gcloud pubsub topics publish topic-from-gcloud --message="My First Message"
+gcloud pubsub topics publish topic-from-gcloud --message="My Second Message"
+gcloud pubsub topics publish topic-from-gcloud --message="My Third Message"
+
+data
+msg id
+ordering key
+attr
+ack id
+
+gcloud pubsub subscriptions pull subscription-gcloud-1 --auto-ack
+gcloud pubsub subscriptions pull subscription-gcloud-2 --auto-ack, pull and immed ack the msg - no ack id shown
+
+--ack-ids=[] - to ack manually
+
+
+gcloud pubsub topics list
+
+gcloud pubsub topics delete topic-from-gcloud
+
+gcloud pubsub topics list-subscriptions my-first-topic
+
+
+---------------------------------------------------------------------
+
+
+Private Networks in GCP - Cloud VPC (IMP)
+
+sec int n/w protecting data, res and comm from external users
+
+isol n/w in GCP, VPC n/w traffic is isolated from other VPCs
+
+create all res inside a GCP VPC, sec from unauth acess and sec comm b/w cloud res
+
+VPC is a global res, can contain res from any reg
+subnets ass w/ regs inside a VPC
+
+subnets need:
+
+sep public res from pvt - create separate subnets
+or to distri res across reg for HA
+
+res from pub subnet can talk to res in pvt subnet
+
+
+by def every project has def VPC
+creation of VPC
+option 1 - auto mode VPC n/w, subnets created in each reg
+option 2 - custom mode, need to create subnets manually, can also assign right IP ranges - recc for prod
+
+enable pvt google access - vms inside subnet can talk to google APIs using pvt IPs
+enable flowlogs - see traff flowing in/out of subnet
+
+CIDR blocks:
+
+classless inter domain routing
+
+contin IPs w/ contin range (nos) to make routing easy
+how to express range of addresses - use subnet mask/range - 69.208.0.0/28 => /28 says that it'll have 16 addresses => 2^(32-28) = 2^4 = 16
+cidr.xyz for CIDR calc and understanding
+
+
+under vpc networks, can create new VPC, create subnets under it if custom mode, also config firewall rules, global or regional routing, ping b/w vpcs fails
+unless we connect those vpcs tog - vpc n/w peering
+
+firewall rules - control traffic in/out of n/w, stateful, each rule has prior ass to it(0-65535), def implied rule w/ lowest prior (65535),
+all egress allowed, all in denied, can override using new rules w/ prior 65534 or lower number
+
+IMP
+def VPC has 4 add rules w/ prior 65534 - allow incoming from vm in same n/w default-allow-internal, allow incoming ssh from port 22 default-allow-ssh, 
+win 3389 def-allow-rdp, allow incoming ICMP from any source in n/w def-allow-icmp (for ping)
+
+ingress and egress rules:
+target - dest
+source - where trff coming from, CIDR range block
+egress: 
+source - outgoing traffic
+dest is CIDR block
+define prior of rule also
+
+config action also
+port also
+proto also
+enforcement status also
+en/disable rule
+
+shared VPC:
+b/w projects
+one host and mult serv
+allows to achieve shared host concerns
+org or shared folder lvl - access should be shared VPC admin
+
+VPC Peering:
+
+across diff orgs, across proj or same proj
+comm using int IP address
+n/w admin not changed, admins are of their own n/w only
+
+
+hybrid cloud w/ cloud VPN and Cloud Interconnect:
+
+IPSec vpn tunnel, traff is public but encryp using Internet Key Exh proto
+SLA 99.99%, 2 ext Ips
+dynamic routing
+
+classic VPN - 99.9%, 1 ext IP
+static and dyn routing
+
+Cloud Interconnect - high speed phy conn b/w on-prem and VPC n./w
+dedicated internconnect - 10-100 GBPS
+Partner internconnect - 50 MBPS-10 GBPS
+data exh over pvt n/w
+red egress costs
+pub internet not used
+acc Google APIs from on-prem apps
+only for high-b/w needs, cloud VPN for low b/w
+
+direct peering - cust to google n/w using n/w peering, not a GCP serv, lower lvl n/w conn outside of GCP, not recc 
+
+------------------------------------------------------------
+
+Operations in Cloud:
+
+monit, logging, tracing and debugging
+
+
+cloud monit:
+
+key aspects of serv - metrics
+create viz (dashboards etc)
+send alerts over notif channels like slack etc
+uptime checks, can also look at AWS ELB, for spec app
+
+
+Workspace:
+
+monit one or more gcp proj or aws accounts
+
+org monit info, 
+create workspace in spec proj - host proj
+add other proj or aws accounts then
+
+vms - def metrics - cpu, disk, n/w, process
+install cloud monit agent, coollectd-based daemon
+
+cloud logging:
+
+real-time log mgmt and anal tool
+exab scale managed serv
+ingest log data from any source
+key fea - log explorer, logs dashboard viz, gen metrics from these logs, capture them using quer and matching strings, logs router to diff dest,
+
+most GCP managed serv send logs auto, install logging agent based on fluentd, from on-prem use BindPlane tool from Blue Medora
+use cloud logging API if want to otherwise
+
+audit and sec logs:
+
+access transparency log  - actions perf by gcp team only for org w/ gold support lvl or above
+cloud audit logs - admin act logs, def enabled, proj viewer
+data access logs - read config, not ena def, project  owner - more perms needed
+sys event logs -gcp admin actions, def yes, proj viewer
+policy denied logs - user or serv account denied access, def yes, proj viewer
+
+cloud logging - controlling and routing:
+
+
+logs goto log router, checks config rules
+log buckets - (sinks)
+_Required - admin, sys and access trans logs - 400 days, cannot del bucket, not change reten per
+_Default - all other logs, 30 days def, billed on amt of logs, cannot del but disable this route, edit reten settinsg, 1d-10yrs
+can have custom buckets and to other servs also
+bucket/syslog/date
+bigq data set
+export to pub/sub topics
+splunk sub to this topic
+create sinks using log router, can add incl/excl filters
+
+
+operations > logging
+
+incl filter mand, excl opt
+
+
+Cloud Trace:
+
+mult micro in a single req
+distri tracing sys for gcp
+collect latency data across gcp serv or instrum apps
+how long a serv takes to handle req
+supported for compt eng, GKE app engine, or trace client libs -java, c++ etc
+
+
+Google Cloud Debugger NO LONGER AVAIL - IMP
+
+
+Cloud Profiler - perf bottlenecks in prod apps
+gather cpu and mem use contin
+connect it w/ app source code
+profiling agent and profiler interface (viz of info gathered)
+v low overhead
+
+Error Reporting:
+
+prod probs in realtime
+agg and display errors reported from cloud serv - stack traces of apps
+central error mgmt console
+firebase crash reporting errors - for android and iOS client apps
+
+report by cloud logg or dir call this API
+
+---------------------------------------------------------------------------
+
+Organization of GCP resources and IAM:
+
+org > folder > project > resour
+
+res created in proj
+folder has mult proj
+org has mult folders
+
+create sep proj for sep envs
+
+create sep folder for each dept
+shared folder for shared folder
+
+one prj per app per env
+
+
+Billing Accounts: IMPIMPIMP
+
+mand
+payment det
+every proj has one
+one bill acc can have mult proj
+
+mult bill acc in single org - yes
+
+recc - create bill acc repre org struc
+
+
+
+2 types:
+
+self-serve - auto payments
+invoiced -  large ents, gen by gc, sent to ent, ent processes
+
+
+managing billing:
+
+budgets - def 50/90/100,  
+alerts - pub/sub, alerted at email,
+exports - bigq, archive it for hist - cloud stor, file exp deprecated
+
+IAM best prac:
+
+prin of least priv
+diff serv acc for diff apps/purposes
+separation of duties - involve atleast 2 people for access to perf spec task, app eng deployer(dep new ver) and serv admin(traff splitting)
+constant monit
+use grps when possible, bind roles to grp in policy
+
+
+User id mgmt in GCP:
+
+email used to create acc - super Admin
+manage access using other users using their gmail accs or create acc then add them, then add policy to that member, not recc for ent(one by one is ineff)
+ent - google workspace or off email /ent ID prov  (IdP) (AD etc)- create grp bind roles to that grp, federate GCP w/ your id prov
+"cloud identity"
+identity platform - select sign-in method - SAML etc
+
+enable SSO
+
+
+IAM members and ids:
+
+google acc - person/email add
+serv acc - apps/servs/res
+google grp - collec of accs, unique email add, appli policy to it
+google workspace domain - collab serv for ent
+cloud identity domain - fed of id, IDaaS - id as a serv
+
+
+org pol serv:
+
+centralized const on all res in my org - org policy
+needs org pol admin role
+org pol overrides IAM policy to user, highest prior
+org pol under IAM and admin
+
+
+IAM pol and res hierar:
+
+org > folder > proj > res, policies are inherited, effec pol is the union at that + above levels
+
+cannot restrict higher pol from higher lvl
+
+
+IAM predef roles - differ diff roles in a spec serv, choose the right one for spec situation
+
+
+iam predef org, billing and proj:
+
+org admin - def res hierar, access mgmt pol, manage other users and roles
+bill acc creator - create bill acc
+bill acc admin - manage bill accs, cannot create
+bill acc user - assoc proj w/ bill accs, usual in comb w/ proj creator
+bill acc viewer - det of bill acc, 
+
+iam predef compute eng:
+
+compute eng admin - complete control of compute
+	inst admin  - create mod and del vms and disks
+	eng n/w admin - n/w res, read-only access to firewall rules and certs
+	sec admin - firewall rules and certs
+	storage admin - disks, imgs, snapshots
+	viewer
+	OS admin login
+	OS login
+
+
+iam predef google app engine:
+
+CRUD
+app eng creator - C/D app
+	admin -  app R/U, complete access to ever else
+	viewer - R everything and ops
+	code viewer - only role that can read code IMP
+	deployer - C/R/D vers, read else also
+	serv admin - RUD vers, app R, CRUD rest, ops like traffic split of vers
+	for logs need cloud logging access and for monit access cloud monitor access
+
+iam predef google Kubernetes eng:
+
+2 things: clusters and app deployed to them
+
+Kub eng admin - every w/ kuber
+	cluster admin  - mgmt of clusters, not kuber API objs, dep pods etc NOT
+	dev - API objs and cluster info
+	viewer - read API objs and info on clusters
+	
+iam predef cloud stor:
+
+stor admin - everything
+	obj ad - objs everything
+	obj creator - create only
+	viewer - see only
+
+iam predef bigQ:
+
+bq	admin - ever
+	data owner - data not jobs
+	editor - edit data not jobs
+	viewer - data view
+	job user - edit/run jobs
+	user - list jobs and data viewer
+	
+iam predef logging and serv acc:
+
+viewer - view all logs except acess trans and data acess audit
+pvt log viewer - logs + read acc trans and data ccess audit
+admin - all
+
+serv acc
+
+admin - create and manage
+acc user - run ops
+serv acc token creator - impersonate accs, jwt tokens etc
+key admin - create and manage serv acc keys
+
+
+iam predef other:
+
+sec admin- get and set any
+sec viewer - list not chnage
+org role admin - admin all custom roles in org and projs
+org role viewer - read all in org
+role admin - access to role in proj
+role viewer - read all custom roles in proj
+role browser - see hierar for proj, incl folder and org and iam pol, view everything above, no changes, cannot see res in project
+
+
+ssh into VMs:
+
+LINUX:
+metadata managed key - indiv keys for each
+OS login - w/o mging ssh keys, linux acc linked to gcp id, enable in metadata - enable OS login to true, inst lvl or proj lvl - upto us, 
+IMP		can import existing linux accs from on-prem, just needs right roles for it
+
+windows OS - pswd based auth, or gcloud
+
+
+sshing into Linux VMs:
+
+1- console ssh button, eph ssh key pair created by comp eng
+2- gcloud compute ssh, uname and persis ssh key-pair created by comp engine, same key-pair reused (IMP distinct for key-pair)
+3- a) custom ssh key and use it to login (metadata managed key), centralize
+   b) OS login API, upload pub ssh key to profile, own managed (self/user managed)
+
+can disable project - wide ssh keys on a spec inst
+
+
+--------------------------------------------------------------------
+
+
+Google Cloud Pricing Calc
+
+estim cost of GCP soln
+no of factors
+est for 40+ serv
+ESTIMATES - NOT BINDING ON GCP
+email estim
+
+bq flat-rate -> book slots to get disc
+data scanned to return res
+
+dataproc - managed hadoop and spark serv, uses clusters (which have VMs)
+
+cloud storage
+class A ops - inserts etc
+class B ops - view/list/ACL/notifs etc
+ 
+same zone vm egress is 0
+
+------------------------------------------------------------------------
+
+Other GCP Servs:
+
+
+GC Deployment manager - 4 envs of same config, it can help w/ script, automation of dep and modif of res, avoid config drift, 
+always modify res created by it using it, simple YAML file, auto rollback , ver control, free to use only pay for res created
+also provides auto estim for depl, 
+config file - yaml
+templates - resusable res defs, python or JinJa2
+deployment - collec of res depl using config
+manifests - read-only onj cont depl config, generated, fully expanded res list
+
+
+Cloud Marketplace (Cloud Launcher) - custom s/w solns, deployable apps and datasets
+
+
+marketplace linked to deployment manager
+
+
+Cloud DNS - pub and pvt managed DNS zones, can route email also, 
+need to create a zone - pub or pvt, need to be owner of spec website for pub, add records in record set - api or static or email, can do from cli also
+short desc is required for managed zone
+3 steps to add records:
+
+start transac
+make changes, add record
+end transac
+
+Cloud Dataflow - unif stream and batch data procc, templates provided for jobs, pub/sub usually involved in data streaming use cases, 
+pub/sub to dataflow to bigq
+pub/sub to dataflow to cloud stor (files)
+cloud stor to dataflow to bigT etc
+bulk compress/decompress files
+convert file b/w formats - avro/parquet and csv
+
+RealTime Fraud detect
+batch procc
+IoT
+sensor data proc
+
+based on Apache Beam (open source)
+serverless and autoscaling
+
+Cloud Dataproc - managed spark and hadoop serv, complex batch procc, ML/AI appl
+mult cluster modes - single node, std , HA(3 masters), 
+uses VMs - can use preemp also
+data anal platform
+alternative - bigQ, if more than sql queries then use dataproc
+-----------------------------------------------------------------
+EXAM:
+
+50 ques and 2 hrs
+res is immed shown
+------------------------------------------------------------------
+gaps in notes:
+
+GCE and GKE are NOT PaaS 
+
+IAM role will need to perform all systems management tasks for compute engine inst - compute admin
+
+gcloud compute disk list - A list of disks defined in the project
+
+change auto scaling parameters of a deployment in the cluster. - use kubectl since it is related to INTERNAL state of clusters
+
+accelerating the pace of deploying new features in applications. They believe your team should be using a PaaS that provides a secure sandbox - app eng std
+
+
+instance running the application available at all times, even when there is no load on the application. - use resident instances in APP ENGINE
+
+HTTP cookie splitting, that is the recommended best practice for routing traffic for stateful applications
+
+not functioning with the expected levels of performance. 
+At some times during the day, the time to complete a transaction is 4-5 times longer than the average transaction time. - use Cloud MONITORING
+
+Trace is for app CODE
+
+What parameters can you configure when attaching a GPU? - GPU type and number of GPUs
+
+
+run large numbers of containers more efficiently while minimizing the cost of administering those containers. 
+You suggest a managed service to reduce administrative overhead. - GKE, GCE is for VMs (MIGs etc NOT CONTAINERS)
+
+Kubernetes - stable IP needed - use service - used to provide a stable endpoint for clients to reach an application. 
+
+Cloud Trace - App Engine, GKE, Cloud Run 
+
+gcloud storage objects update gs://free-photos-gcp --storage-class=Nearline -> change storage class
+
+
+Users do not have IAM permissions that allow them access to objects in buckets. 
+Prior to setting uniform bucket-level access, those users had access through ACLs.
+
+
+--logging and --monitoring for GKE logging and monitoring 
+
+
+Kubernetes Engine collects application logs by default when the log data is written where? - stdout and stderr
+
+A data warehouse administrator is trying to load data from Cloud Storage to BigQuery. What permissions will they need?
+
+bigquery.tables.create
+bigquery.tables.updateData
+bigquery.jobs.create
+
+gsutil iam ch allUsers:objectViewer gs://free-photos-on-gcp -> access to all for viewing
+
+Enable firewall rule logging for each of the firewall rules - if ingress/exgress traffic issue
+
+
+Cloud Data Fusion is a managed service that is designed for building data transformation pipelines.
+
+Dataprep for prepping data for ML/analy etc
+
+Regional internal address to VMs auto assigned
+
+
+kubectl apply -f my-app.yaml - apply manifest file to kub eng cluster
+
+To copy files to a VM, a firewall rule must be in place to allow traffic on port 22, the default SSH port,
+
+Cloud Audit Logs maintain three audit logs: Admin Activity logs, Data Access logs, and System Event logs.
+
+billing.accounts.create is the permission needed to create a billing account. Roles are sets of permissions but they are not permissions themselves. IMPIMP
+
+On a sole tenant node, only VMs from the same project will run on that node. 
+They do not need to use the same operating system. Sole tenant nodes are not restricted to a single VM.
+
+Target pools must have a health check to function properly. Nodes can be in different zones but must be in the same region. 
+Cloud Monitoring and Cloud Logging are useful but they are not required for the target pool to function properly. 
+Nodes in a pool have the same configuration.
+
+want to use Cloud Operations for GKE instead of legacy monitoring and logging. => --enable-stackdriver-kubernetes
+
+want to run a Kubernetes cluster for a high availability set of applications. What type of cluster would you use - Regional, no Multi-regional
+
+
+kubectl apply -f my-app.yaml => deploy app in cluster using app.yaml
+
+
+gcloud container images list => view metadata about existing container images
+
+
+biz intel - BigQuery, cloud sql cannot handle 100GB
+
+bq show --format=prettyjson analytics1:primarydata, info about dataset in project analytics1
+
+lifecycle policies can - del and set storage class
+
+int TCP traffic LB - n/w LB TCP/UDP
+
+create an instance that runs as a service account, 
+attaches a persistent disk to an instance that runs as a service account, 
+and set instance metadata on an instance that runs as a service account.
+Need -> roles/compute.instanceAdmin.v1, roles/iam.serviceAccountUser
+
+
+manage projects in GCP -> resourcemanager.projects.get, resourcemanager.projects.getIamPolicy, and resourcemanager.projects.setIamPolicy only
+
+
+release new versions of each image while still maintaining the ability to rollback to a previous version if needed. -> use image families
+
+
+gcloud compute project-info describe --project [PROJECT ID] -> def compute reg etc setting
+
+easily analyze resource usage by team and department for GKE -> Namespaces(vir clusters) and labels
+
+
+In the K_Configuration environment variable -> cluster config name
+
+
+gsutil stat gs://BUCKET_NAME/OBJECT_NAME, for OBJECTS
+
+describe is for BUCKET
+
+regional is network LB
+within VPC is internal LB
+
+
+
+Traffic Source	Protocol	Need SSL Termination?	Global?	Recommended LB
+Internet		HTTP/HTTPS	Yes				Yes		HTTP(S) LB
+Internet		TCP		Yes				Yes		TCP Proxy LB
+Internet		TCP		Yes(TCP + SSL)		Yes		SSL Proxy LB
+Internet		TCP/UDP	No				No, reg	Network LB
+Internal VPC	TCP/UDP	No				No, reg	Internal LB
+	
+
+The kubectl get nodes command helps you quickly check the status of nodes in the cluster, which is crucial when troubleshooting pod assignment issues.
+
+Log-based metrics in Cloud Monitoring allow you to create custom metrics based on log data, 
+which can be used for monitoring specific events or conditions in your GCE instances.
+
+Consolidating all projects under a single billing account allows for centralized management of billing alerts, making the process more efficient.
+
+Google Cloud Firewall Rules provides a centralized firewall management solution for managing network traffic and firewall rules efficiently.
+
+You must enable Cloud CDN on each backend bucket or backend service individually.
+
+gcloud sql instances patch [INSTANCE_NAME] --backup-retention-settings.retained-backups=30
+
+BigQuery allows you to set up scheduled queries that can automate the process of extracting a subset of data to Cloud Storage, 
+making it an efficient solution for regular data export tasks.
+
+kubectl set image deployment/[DEPLOYMENT_NAME] [CONTAINER_NAME]=[NEW_IMAGE]
+
+Increasing the machine type (CPU/RAM) of the Cloud SQL instance can directly impact and improve performance, 
+especially in scenarios of high latency due to resource constraints.
+
+A Cloud VPN Gateway and a Cloud Router are required to set up a VPN connection between GCP and an on-premises network.
+
+Google Cloud Pub/Sub and Google Cloud Dataflow are commonly used in real-time data processing pipelines. - since ques was strictly about PIPELINES
+
+
+Google Cloud Logging allows you to aggregate logs from various GCP services. 
+You can create custom filters to view and analyze the specific data you're interested in.
+
+
+Cloud Storage Transfer is a service provided by Google Cloud specifically designed for transferring large amounts of data 
+between different cloud storage providers. 
+It is the recommended method for transferring 2 TB of data from an AWS S3 bucket to a Google Cloud Storage bucket.
+
+UPDATE storage class:
+gcloud storage objects update gs://free-photos-gcp --storage-class=Nearline
+
+IoT Data Hbase - BigTable
